@@ -1,22 +1,43 @@
-tc = int(input())  # 테스트 케이스
+from sys import stdin
+from collections import deque
 
-for t in range(1, tc + 1):
-    ## 변수 입력 부분 ##
-    n, m = map(int, input().split())  # n x n 배열, m x m 파리채
-    grid = [list(map(int, input().split())) for _ in range(n)]
-    answer = 0
-    Sum = 0  # 파리채 영역마다 죽은 파리 수
+input = stdin.readline
 
-    ## 문제 해결 부분 ##
-    # n x n 배열에서 m x m 배열을 탐색
-    for y in range(n - m + 1):
-        for x in range(n - m + 1):
-            # 해당 위치에서 m x m 배열을 탐색
-            for z in range(m):
-                for w in range(m):
-                    Sum += grid[y + z][x + w]
-            if answer < Sum:
-                answer = Sum
-            Sum = 0  # 초기화
+## 변수 입력 부분 ##
+n = int(input().strip())  # n: 상근이의 동기 수
+m = int(input().strip())  # m: 친구 관계 수
+vertex = [[] for _ in range(n + 1)]  # 동기들의 관계 표현
+visited = [True for _ in range(n + 1)]  # 방문 확인용 리스트
 
-    print(f"#{t} {answer}")
+for _ in range(m):
+    v1, v2 = map(int, input().split())
+    # 양방향 그래프 구현
+    vertex[v1].append(v2)
+    vertex[v2].append(v1)
+
+
+## 문제 해결 부분 ##
+def bfs(x):
+    deq = deque()
+    deq.append((x, 0))
+    visited[x] = False  # 상근이 방문 처리
+    person_cnt = -1  # 초대할 사람의 수 -> while문 들어가서 +1 되므로 -1로 선언
+
+    while deq:
+        cur_num, cur_cnt = deq.popleft()  # (현재 친구 번호, 관계 거리)
+        if cur_cnt <= 2:
+            person_cnt += 1
+        # 관계 거리가 2보다 커지면 더 이상 조사할 필요가 없으므로, break
+        else:
+            break
+
+        for elem in vertex[cur_num]:
+            # 방문이 가능하다면 -> deq에 추가
+            if visited[elem]:
+                visited[elem] = False  # 방문 처리
+                deq.append((elem, cur_cnt + 1))
+
+    return person_cnt
+
+
+print(bfs(1))  # 상근이부터 시작 -> 친구의 친구까지 허용 = 거리 2
