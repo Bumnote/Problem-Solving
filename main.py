@@ -1,72 +1,76 @@
-from sys import stdin
-from collections import deque
+from sys import stdin, setrecursionlimit
 
 input = stdin.readline
+setrecursionlimit(100 * 100)
 
 
 def in_range(y, x):
-    return 0 <= y < h and 0 <= x < w
+    return 0 <= y < n and 0 <= x < m
 
 
-def bfs():
-    global person, fires
+def dfs(y, x, f):
+    global cheese
 
-    # 상근이의 위치가 더 이상 추가가 안될 때까지
-    while person:
-        p_len = len(person)
-        f_len = len(fires)
+    # 치즈의 가장자리를 녹이는 dfs
+    if f:
+        visited[y][x] = False  # 방문 처리
 
-        # 불 먼저 이동
-        for _ in range(f_len):
-            f_y, f_x = fires.popleft()
-            for dy, dx in ((-1, 0), (1, 0), (0, -1), (0, 1)):
-                new_y, new_x = f_y + dy, f_x + dx
-                # 범위를 넘거나, 방문한 적이 있거나, 벽일 경우 -> continue
-                if not in_range(new_y, new_x) or not f_visited[new_y][new_x] or buildings[new_y][new_x] == "#":
-                    continue
-                fires.append((new_y, new_x))
-                f_visited[new_y][new_x] = False  # 방문 처리
-                buildings[new_y][new_x] = "*"  # 불 퍼짐 처리
+        for dy, dx in ((-1, 0), (1, 0), (0, 1), (0, -1)):
+            c_y, c_x = y + dy, x + dx
+            if in_range(c_y, c_x) and grid[c_y][c_x] == 1:
+                grid[c_y][c_x] = "C"
 
-        # 상근이 이동
-        for _ in range(p_len):
-            p_y, p_x, p_cnt = person.popleft()
-            for dy, dx in ((-1, 0), (1, 0), (0, -1), (0, 1)):
-                new_y, new_x = p_y + dy, p_x + dx
-                # 다음 위치가 빌딩 밖을 벗어나면 -> 움직인 거리 return
-                if not in_range(new_y, new_x):
-                    return p_cnt + 1
+            new_y, new_x = y + dy, x + dx
+            if not in_range(new_y, new_x) or not visited[new_y][new_x] or grid[new_y][new_x] != 0:
+                continue
 
-                # 방문한 적이 있거나, 빈 칸이 아니라면 -> continue
-                if not p_visited[new_y][new_x] or buildings[new_y][new_x] != ".":
-                    continue
+            dfs(new_y, new_x, True)
 
-                person.append((new_y, new_x, p_cnt + 1))
-                p_visited[new_y][new_x] = False  # 방문 처리
+    # 치즈 조각의 개수를 구하는 dfs
+    else:
+        cheese += 1
+        visited[y][x] = False  # 방문 처리
 
-    return "IMPOSSIBLE"
+        for dy, dx in ((-1, 0), (1, 0), (0, 1), (0, -1)):
+            new_y, new_x = y + dy, x + dx
+            if not in_range(new_y, new_x) or not visited[new_y][new_x] or grid[new_y][new_x] != 1:
+                continue
+
+            dfs(new_y, new_x, False)
 
 
-tc = int(input().strip())  # 테스트 케이스 개수
+## 변수 입력 부분 ##
+n, m = map(int, input().split())  # n: 가로, m: 세로 (1 <= n, m <= 100)
+grid = [list(map(int, input().split())) for _ in range(n)]
 
-for _ in range(tc):
-    w, h = map(int, input().split())  # w: 너비, h: 높이 (1 <= w, h <= 1,000)
-    buildings = []
-    person = deque()
-    fires = deque()
-    p_visited = [[True] * w for _ in range(h)]  # 상근이의 방문 확인 리스트
-    f_visited = [[True] * w for _ in range(h)]  # 불의 방문 확인 리스트
+last_cheese = 0  # 마지막 다 녹기 직전의 치즈 개수
+cnt = 0  # 치즈가 다 녹을때까지 진행된 횟수
 
-    for y in range(h):
-        ## 변수 입력 부분 ##
-        buildings.append(list(input().strip()))
-        for x in range(w):
-            if buildings[y][x] == "@":
-                person.append((y, x, 0))
-                p_visited[y][x] = False  # 방문 처리
-            if buildings[y][x] == "*":
-                fires.append((y, x))
-                f_visited[y][x] = False  # 방문 처리
+## 문제 해결 부분 ##
+while True:
+    visited = [[True] * m for _ in range(n)]  # 방문 확인용
+    flag = True  # while문 탈출 flag
 
-    ## 문제 해결 부분 ##
-    print(bfs())
+    # 치즈 조각 개수 구하는 코드
+    cheese = 0
+    for y in range(n):
+        for x in range(m):
+            # 좌표값이 1이면서 방문이 가능하면 -> dfs 탐색
+            if grid[y][x] == 1 and visited[y][x]:
+                flag = False
+                dfs(y, x, False)  # dfs탐색이 끝날때마다 1개씩 추가
+
+    if flag:
+        print(cnt, last_cheese, sep="\n")
+        break
+
+    dfs(0, 0, True)  # 치즈 겉면을 녹이는 dfs 탐색
+    last_cheese = cheese
+
+    # "C"인 부분을 0으로 바꾸어주는 코드
+    for y in range(n):
+        for x in range(m):
+            if grid[y][x] == "C":
+                grid[y][x] = 0
+
+    cnt += 1  # 진행 횟수 추가
