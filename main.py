@@ -4,47 +4,75 @@ from collections import deque
 input = stdin.readline
 
 
-def bfs(x):
-    deq = deque()
-    deq.append((x, 0))  # (현재 위치, 방문 거리)
-    visited[x] = False  # 방문 처리
+def in_range(y, x):
+    return 0 <= y < r and 0 <= x < c
 
-    while deq:
-        cur_x, cur_cnt = deq.popleft()
-        distance[cur_x] = cur_cnt  # 방문 거리 저장
 
-        for next in range(n):
-            # 방문 가능하고, 연결되어있다면 -> deq에 추가
-            if visited[next] and vertex[cur_x][next] == 1:
-                deq.append((next, cur_cnt + 1))
-                visited[next] = False  # 방문 처리
+def bfs():
+    global fires, jihun
+
+    while jihun:
+        j_len = len(jihun)  # 재훈이가 존재할 수 있는 위치의 개수
+        f_len = len(fires)  # 불이 존재할 수 있는 위치의 개수
+
+        # 불을 먼저 이동
+        for _ in range(f_len):
+            f_y, f_x = fires.popleft()  # 1분에 움직일 수 있는 사이클을 모두 탐색한다.
+
+            for dy, dx in ((-1, 0), (1, 0), (0, 1), (0, -1)):
+                new_y, new_x = f_y + dy, f_x + dx
+
+                # 범위를 넘거나, 방문한 적이 있거나, 벽이라면 이동 못하므로 -> continue
+                if not in_range(new_y, new_x) or not f_visited[new_y][new_x] or miro[new_y][new_x] == "#":
+                    continue
+
+                # 범위를 넘지 않고, 방문 가능하고, 빈 칸이라면 -> fires에 추가
+                fires.append((new_y, new_x))
+                f_visited[new_y][new_x] = False  # 움직인 위치 방문 처리
+                miro[new_y][new_x] = "F"  # 불 표시
+
+        # 그 다음, 지훈이 이동
+        for _ in range(j_len):
+            j_y, j_x, j_c = jihun.popleft()  # 1분에 움직일 수 있는 사이클을 모두 탐색한다.
+
+            for dy, dx in ((-1, 0), (1, 0), (0, 1), (0, -1)):
+                new_y, new_x = j_y + dy, j_x + dx
+                # 만약 재훈이가 미로의 경로를 벗어난다면 -> 탈출 가능한 경우이므로, 움직인 거리를 return
+                if not in_range(new_y, new_x):
+                    return j_c + 1
+
+                # 방문한 적이 있고, 빈 칸이 아니라면 -> continue
+                if not j_visited[new_y][new_x] or miro[new_y][new_x] != ".":
+                    continue
+
+                # 방문한 적이 없고, 빈 칸이라면 -> 이동
+                jihun.append((new_y, new_x, j_c + 1))
+                j_visited[new_y][new_x] = False  # 움직인 위치는 방문 처리
+
+    # jihun이가 더 이상 움직일 수 없게 되면, 탈출 불가능
+    return "IMPOSSIBLE"
 
 
 ## 변수 입력 부분 ##
-n, m = map(int, input().split())  # n: 도시의 개수, m: 도로의 개수
-vertex = [[0] * n for _ in range(n)]
+r, c = map(int, input().split())  # 1 <= r, c <= 1000, r: 행, c: 열
+miro = []  # 미로 맵
+jihun = deque()
+fires = deque()
 
-for _ in range(m):
-    v1, v2 = map(int, input().split())  # v1 <--> v2 양방향
-    v1, v2 = v1 - 1, v2 - 1  # 인덱스 변경
-    vertex[v1][v2] = 1
-    vertex[v2][v1] = 1
+j_visited = [[True] * c for _ in range(r)]  # 지훈이의 방문 확인 리스트
+f_visited = [[True] * c for _ in range(r)]  # 불의 방문 확인 리스트
 
-q = int(input().strip())  # q: 도로 정비 계획인 도로의 수
-for _ in range(q):
-    a, i, j = map(int, input().split())  #
-    i, j = i - 1, j - 1  # 인덱스 변경
-    # a == 1: 두 도시를 잇는다.
-    if a == 1:
-        vertex[i][j] = 1
-        vertex[j][i] = 1
-    # a == 2: 두 도시를 끊는다.
-    else:
-        vertex[i][j] = 0
-        vertex[j][i] = 0
+for y in range(r):
+    miro.append(list(input().strip()))
+    for x in range(c):
+        # 지훈이의 위치 저장
+        if miro[y][x] == "J":
+            jihun.append((y, x, 0))
+            j_visited[y][x] = False  # 방문 처리
+        # 불의 위치 저장
+        if miro[y][x] == "F":
+            f_visited[y][x] = False  # 방문 처리
+            fires.append((y, x))
 
-    ## 문제 해결 부분 ##
-    visited = [True] * n
-    distance = [-1] * n
-    bfs(0)
-    print(*distance, sep=" ")
+## 문제 해결 부분 ##
+print(bfs())
