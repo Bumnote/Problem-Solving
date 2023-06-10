@@ -22,7 +22,7 @@ def bfs(x):
         cur_x = deq.popleft()
 
         for elem in vertex[cur_x]:
-            # 방문이 가능하다면 -> deq에 추가 & 해킹 가능 횟수 증가 
+            # 방문이 가능하다면 -> deq에 추가 & 해킹 가능 횟수 증가
             if visited[elem]:
                 visited[elem] = False  # 방문 처리
                 deq.append(elem)
@@ -30,18 +30,20 @@ def bfs(x):
 
 
 max_hack = 0
-hack_cnt = [0] * (n + 1)
-
+hack_lst = []
 for i in range(1, n + 1):
     visited = [True] * (n + 1)
     cnt = 0
 
-    bfs(i)  # 너비 우선 탐색 실행 
+    bfs(i)  # 너비 우선 탐색 실행
 
-    hack_cnt[i] = cnt
-    max_hack = max(max_hack, cnt)  # 최대 해킹 횟수 갱신 
+    if max_hack < cnt:
+        hack_lst = [i]
+        max_hack = cnt  # 최대 해킹 가능 횟수 갱신
+
+    # 최대 해킹 가능 횟수가 같으면 hack_lst에 계속 추가 
+    elif max_hack == cnt:
+        hack_lst.append(i)
 
 ## 정답 출력 부분 ##
-for j in range(1, n + 1):
-    if hack_cnt[j] == max_hack:
-        print(j, end=" ")
+print(*hack_lst)
