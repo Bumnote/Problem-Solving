@@ -1,6 +1,6 @@
 from sys import stdin, setrecursionlimit
 
-setrecursionlimit(10 ** 7)
+setrecursionlimit(10 ** 6)
 input = stdin.readline
 
 ## 변수 입력 부분 ##
