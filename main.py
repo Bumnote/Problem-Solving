@@ -1,38 +1,37 @@
-from sys import stdin
+from sys import stdin, setrecursionlimit
 
 input = stdin.readline
+setrecursionlimit(500000)
 
 ## 변수 입력 부분 ##
-r, c, k = map(int, input().split())  # r: 행, c: 열, k: 거리
-h_map = [list(input().strip()) for _ in range(r)]
+n = int(input().strip())
+vertex = [[] for _ in range(n + 1)]
+visited = [True] * (n + 1)
+
+# 임의의 라인을 입력받는다.
+for _ in range(n - 1):
+    v1, v2 = map(int, input().split())
+    vertex[v1].append(v2)
+    vertex[v2].append(v1)
 
 
 ## 문제 해결 부분 ##
-## 왼쪽 아래(현수) ----> 오른쪽 위(집)
-def dfs(y, x, k):
-    global cnt, answer
+def dfs(x, dist):
+    global cnt
 
-    # 현수가 집에 도착한 경우 -> answer++
-    if y == 0 and x == c - 1 and cnt == k - 1:
-        answer += 1
-        return
-
-    for dy, dx in ((-1, 0), (0, 1), (1, 0), (0, -1)):
-        new_y, new_x = y + dy, x + dx
-
-        if new_y < 0 or new_y >= r or new_x < 0 or new_x >= c or not visited[new_y][new_x] or h_map[new_y][
-            new_x] == "T":
-            continue
-        visited[new_y][new_x] = False  # 방문 처리
-        cnt += 1
-        dfs(new_y, new_x, k)
-        cnt -= 1
-        visited[new_y][new_x] = True  # 복원 처리
+    for elem in vertex[x]:
+        # 방문이 가능한 노드라면 -> 깊이 탐색
+        if visited[elem]:
+            # 다음 노드의 연결 요소 개수가 1이라면 -> leaf node
+            if len(vertex[elem]) == 1:
+                cnt += (dist + 1)
+            visited[elem] = False  # 방문 처리
+            dfs(elem, dist + 1)
 
 
-visited = [[True] * c for _ in range(r)]  # 방문 확인용
-cnt, answer = 0, 0
-visited[r - 1][0] = False  # 현수의 위치 -> 방문처리
-dfs(r - 1, 0, k)
+cnt = 0
+visited[1] = False  # 루트 노드 방문 처리
+dfs(1, 0)
 
-print(answer)
+# leaf 노드까지의 거리 합이 홀수이면 성원이가 이긴다.
+print("Yes" if cnt % 2 == 1 else "No")
