@@ -1,37 +1,34 @@
 from sys import stdin, setrecursionlimit
 
 input = stdin.readline
-setrecursionlimit(500000)
+setrecursionlimit(10 ** 5)
 
 ## 변수 입력 부분 ##
-n = int(input().strip())
-vertex = [[] for _ in range(n + 1)]
-visited = [True] * (n + 1)
+n, m = map(int, input().split())  # n: 작업 개수, m: 순서 정보
+job = [[] for _ in range(n + 1)]
 
-# 임의의 라인을 입력받는다.
-for _ in range(n - 1):
-    v1, v2 = map(int, input().split())
-    vertex[v1].append(v2)
-    vertex[v2].append(v1)
+for _ in range(m):
+    a, b = map(int, input().split())  # a -> b 단방향 그래프
+    job[b].append(a)  # b -> a 로 저장하여 b에서부터 dfs 실행
+
+x = int(input().strip())  # x: 오늘 끝내야 할 작업 번호
 
 
 ## 문제 해결 부분 ##
-def dfs(x, dist):
+def dfs(x):
     global cnt
 
-    for elem in vertex[x]:
-        # 방문이 가능한 노드라면 -> 깊이 탐색
+    for elem in job[x]:
+        # 방문이 가능하다면 -> 깊이 탐색
         if visited[elem]:
-            # 다음 노드의 연결 요소 개수가 1이라면 -> leaf node
-            if len(vertex[elem]) == 1:
-                cnt += (dist + 1)
             visited[elem] = False  # 방문 처리
-            dfs(elem, dist + 1)
+            cnt += 1
+            dfs(elem)
 
 
+visited = [True] * (n + 1)  # 방문 확인용
+visited[x] = False  # 방문 처리
 cnt = 0
-visited[1] = False  # 루트 노드 방문 처리
-dfs(1, 0)
+dfs(x)
 
-# leaf 노드까지의 거리 합이 홀수이면 성원이가 이긴다.
-print("Yes" if cnt % 2 == 1 else "No")
+print(cnt)
