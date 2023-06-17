@@ -1,37 +1,24 @@
-from sys import stdin, setrecursionlimit
+from sys import stdin
+from itertools import combinations
 
-setrecursionlimit(10 ** 4)
 input = stdin.readline
 
-tc = int(input().strip())  # 테스트 케이스 입력
-for _ in range(tc):
-    ## 변수 입력 부분 ##
-    n, m = map(int, input().split())  # n: 행, m: 열
-    field = [list(input().strip()) for _ in range(n)]
-    visited = [[True] * m for _ in range(n)]
+n = int(input().strip())
+days = [list(map(int, input().split())) for _ in range(n)]
+max_student = -1
+answer = [0, 0, 0, 0, 0]
+a1, a2 = 0, 0
 
+for d1, d2 in combinations([0, 1, 2, 3, 4], 2):
+    p_student = 0
+    for i in range(n):
+        if days[i][d1] == 1 and days[i][d2] == 1:
+            p_student += 1
 
-    ## 문제 해결 부분 ##
-    def dfs(y, x):
+    if max_student < p_student:
+        max_student = p_student
+        a1, a2 = d1, d2
 
-        for dy, dx in ((-1, 0), (1, 0), (0, 1), (0, -1)):
-            new_y, new_x = y + dy, x + dx
-
-            if new_y < 0 or new_y >= n or new_x < 0 or new_x >= m or not visited[new_y][new_x] or field[new_y][
-                new_x] == ".":
-                continue
-
-            visited[new_y][new_x] = False  # 방문 처리
-            dfs(new_y, new_x)
-
-
-    cnt = 0
-    for y in range(n):
-        for x in range(m):
-            # 방문 가능하고, 양(#)이라면 -> dfs 탐색
-            if visited[y][x] and field[y][x] == "#":
-                visited[y][x] = False  # 방문 처리
-                dfs(y, x)
-                cnt += 1
-
-    print(cnt)
+answer[a1], answer[a2] = 1, 1
+print(max_student)
+print(*answer, sep=" ")
