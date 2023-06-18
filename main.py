@@ -1,24 +1,30 @@
-from sys import stdin
-from itertools import combinations
+from sys import stdin, maxsize
+from math import isqrt
 
 input = stdin.readline
 
-n = int(input().strip())
-days = [list(map(int, input().split())) for _ in range(n)]
-max_student = -1
-answer = [0, 0, 0, 0, 0]
-a1, a2 = 0, 0
+## 변수 입력 부분 ##
+n, m = map(int, input().split())  # a: GCD, b:LCM
 
-for d1, d2 in combinations([0, 1, 2, 3, 4], 2):
-    p_student = 0
-    for i in range(n):
-        if days[i][d1] == 1 and days[i][d2] == 1:
-            p_student += 1
 
-    if max_student < p_student:
-        max_student = p_student
-        a1, a2 = d1, d2
+## 문제 해결 부분 ##
+# 서로소를 판별하는 함수
+def isTrue(x, y):
+    for i in range(2, x):
+        if x % i == 0 and y % i == 0:
+            return False
+    return True
 
-answer[a1], answer[a2] = 1, 1
-print(max_student)
-print(*answer, sep=" ")
+
+temp = m // n  # LCM = i * j * GCD
+a, b = 0, 0
+min_sum = maxsize  # 두 정수의 합의 최솟값을 담을 변수
+
+for i in range(1, isqrt(temp) + 1):
+    # temp가 나누어 떨어지면서, 서로소인 경우 -> 정답 조건에 해당된다.
+    if temp % i == 0 and isTrue(i, temp // i):
+        if min_sum > i + (temp // i):
+            a, b = i, temp // i
+            min_sum = i + (temp // i)
+
+print(n * a, n * b)
