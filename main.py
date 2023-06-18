@@ -1,30 +1,32 @@
-from sys import stdin, maxsize
+from sys import stdin
 from math import isqrt
 
 input = stdin.readline
 
 ## 변수 입력 부분 ##
-n, m = map(int, input().split())  # a: GCD, b:LCM
-
+n = int(input().strip())  # n자리 수, (1 <= n <= 8)
+odds = ["1", "3", "5", "7", "9"]
 
 ## 문제 해결 부분 ##
-# 서로소를 판별하는 함수
-def isTrue(x, y):
-    for i in range(2, x):
-        if x % i == 0 and y % i == 0:
+def isPrime(num):
+    for i in range(2, isqrt(num) + 1):
+        if num % i == 0:
             return False
+    # for 반복문에 걸리지 않으면 소수
     return True
 
+def dfs(x):
+    # 길이가 n이 된 경우 -> print
+    if len(x) == n:
+        print(x)
+        return
 
-temp = m // n  # LCM = i * j * GCD
-a, b = 0, 0
-min_sum = maxsize  # 두 정수의 합의 최솟값을 담을 변수
+    for odd in odds:
+        if isPrime(int(x + odd)):
+            dfs(x + odd)
 
-for i in range(1, isqrt(temp) + 1):
-    # temp가 나누어 떨어지면서, 서로소인 경우 -> 정답 조건에 해당된다.
-    if temp % i == 0 and isTrue(i, temp // i):
-        if min_sum > i + (temp // i):
-            a, b = i, temp // i
-            min_sum = i + (temp // i)
 
-print(n * a, n * b)
+dfs("2")
+dfs("3")
+dfs("5")
+dfs("7")
