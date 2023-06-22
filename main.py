@@ -3,27 +3,22 @@ from sys import stdin
 input = stdin.readline
 
 ## 변수 입력 부분 ##
-n, k = map(int, input().split())  # n까지, k번째 지우는 수
-primes = [False, False] + [True] * (n - 1)
+n = int(input().strip())  # n: 링의 개수
+rings = list(map(int, input().split()))  # n개의 링
 
 
 ## 문제 해결 부분 ##
-def solve():
-    global cnt
-    for i in range(2, len(primes)):
-        if primes[i]:
-            cnt += 1
-            if cnt == k:
-                return i
-            for j in range(2 * i, len(primes), i):
-                # 이미 처리했으면 횟수에 포함하지 않는다.
-                if not primes[j]:
-                    continue
-                primes[j] = False  # 배수는 소수가 아님
-                cnt += 1
-                if cnt == k:
-                    return j
+# 유클리드 호제법으로 두 수의 최대공약수 구하기
+def get_gcd(a, b):
+    if a < b:
+        a, b = b, a
+
+    if b == 0:
+        return a
+
+    return get_gcd(b, a % b)
 
 
-cnt = 0
-print(solve())
+for i in range(1, len(rings)):
+    GCD = get_gcd(rings[0], rings[i])
+    print(f"{rings[0] // GCD}/{rings[i] // GCD}")  # 기약분수로 표현
