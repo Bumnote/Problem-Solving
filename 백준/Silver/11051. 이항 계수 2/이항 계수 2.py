@@ -21,8 +21,9 @@ def tri(n, k):
     # 조합의 성질 활용
     if dp[n][k] == -1:
         dp[n][k] = tri(n - 1, k) + tri(n - 1, k - 1)
-
+        dp[n][k] %= 10007
+        
     return dp[n][k]
 
 
-print(tri(n, k) % 10007)
+print(tri(n, k))
