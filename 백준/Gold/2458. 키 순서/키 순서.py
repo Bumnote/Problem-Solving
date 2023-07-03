@@ -4,7 +4,7 @@ input = stdin.readline
 
 ## 변수 입력 부분 ##
 n, m = map(int, input().split())  # n: 학생들의 수, m: 키를 비교한 횟수
-INF = float('inf')
+INF = 125000
 students = [[INF] * (n + 1) for _ in range(n + 1)]  # n명의 학생들은 키가 모두 다르다.
 
 for _ in range(m):
@@ -28,7 +28,7 @@ for y in range(1, n + 1):
     flag = True
     for x in range(1, n + 1):
         # 한 노드에서 갈 수 없는 노드는 다른 노드에서 자신한테 올 수 있어야 한다.
-        if students[y][x] == float('inf') and students[x][y] == float('inf'):
+        if students[y][x] == INF and students[x][y] == INF:
             flag = False
             break
     if flag:
