@@ -19,7 +19,9 @@ for t in range(1, n + 1):
 for k in range(1, n + 1):
     for i in range(1, n + 1):
         for j in range(1, n + 1):
-            students[i][j] = min(students[i][j], students[i][k] + students[k][j])
+            # 연산이 대입보다 빠르다.
+            if students[i][j] > students[i][k] + students[k][j]:
+                students[i][j] = students[i][k] + students[k][j]
 
 cnt = 0
 for y in range(1, n + 1):
