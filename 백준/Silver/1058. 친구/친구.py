@@ -24,8 +24,8 @@ def bfs(x):
             return
 
         for i, next in enumerate(graph[cur_x]):
-            # 방문 가능하고, "Y"라면 -> append
-            if visited[i] and next == "Y":
+            # 방문 가능하고, "Y"이면서, cur_cnt <= 1이면 -> append
+            if visited[i] and next == "Y" and cur_cnt <= 1:
                 visited[i] = False  # 방문 처리
                 deq.append((i, cur_cnt + 1))
 
