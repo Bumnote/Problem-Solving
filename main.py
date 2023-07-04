@@ -1,36 +1,29 @@
-from sys import stdin, maxsize
+from sys import stdin
 
 input = stdin.readline
 
 ## 변수 입력 부분 ##
-tc = int(input().strip())  # tc: 테스트 케이스
+# v <= 400, e <= V*(V - 1)
+v, e = map(int, input().split())  # v: 마을의 개수, e: 도로의 개수
+INF = float('inf')
+village = [[INF] * (v + 1) for _ in range(v + 1)]
 
-for t in range(1, tc + 1):
-    s = int(input().strip())  # s: 스테이션의 수
-    matrix = [list(map(int, input().strip())) for _ in range(s)]
+for _ in range(e):
+    a, b, c = map(int, input().split())  # a -> b: 거리 c
+    village[a][b] = c
 
-    for y in range(s):
-        for x in range(s):
-            if y != x and matrix[y][x] == 0:
-                matrix[y][x] = maxsize
+## 문제 해결 부분 ##
+# 플로이드 워셜 점화식 구현 
+for k in range(1, v + 1):
+    for i in range(1, v + 1):
+        for j in range(1, v + 1):
+            if village[i][j] > village[i][k] + village[k][j]:
+                village[i][j] = village[i][k] + village[k][j]
 
-    for k in range(s):
-        for i in range(s):
-            for j in range(s):
-                matrix[i][j] = min(matrix[i][j], matrix[i][k] + matrix[k][j])
+dist = INF
+for t in range(1, v + 1):
+    if village[t][t] != INF:
+        if dist > village[t][t]:
+            dist = village[t][t]
 
-    ans = 0
-    cnt = 0
-    for y in range(s):
-        for x in range(s):
-            if matrix[y][x] == maxsize:
-                matrix[y][x] = 0
-            # 해당 거리가 더 크다면 -> 거리 갱신, 개수 갱신
-            if matrix[y][x] > ans:
-                ans = matrix[y][x]
-                cnt = 1
-            # 해당 거리가 같다면 -> 거리 유지, 개수 증가
-            elif matrix[y][x] == ans:
-                cnt += 1
-
-    print(f"Case #{t}: {ans * cnt}")  # 출력 형식
+print(dist if dist != INF else -1)
