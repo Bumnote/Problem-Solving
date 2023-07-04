@@ -1,29 +1,39 @@
 from sys import stdin
+from collections import deque
 
 input = stdin.readline
 
 ## 변수 입력 부분 ##
-# v <= 400, e <= V*(V - 1)
-v, e = map(int, input().split())  # v: 마을의 개수, e: 도로의 개수
+# (1 <= n <= 100 -> 플로이드 워셜 가능), (1 <= m <= 15), (1 <= r <= 100)
+n, m, r = map(int, input().split())  # n: 지역의 개수, m: 수색 범위, r: 길의 개수
+items = [0] + list(map(int, input().split()))  # n개의 아이템의 수들
 INF = float('inf')
-village = [[INF] * (v + 1) for _ in range(v + 1)]
+area = [[INF] * (n + 1) for _ in range(n + 1)]  # 양방향 그래프 = 대칭 행렬
 
-for _ in range(e):
-    a, b, c = map(int, input().split())  # a -> b: 거리 c
-    village[a][b] = c
+for t in range(1, n + 1):
+    area[t][t] = 0
 
-## 문제 해결 부분 ##
-# 플로이드 워셜 점화식 구현 
-for k in range(1, v + 1):
-    for i in range(1, v + 1):
-        for j in range(1, v + 1):
-            if village[i][j] > village[i][k] + village[k][j]:
-                village[i][j] = village[i][k] + village[k][j]
+# 가중치가 다르므로 인접행렬 구현
+for _ in range(r):
+    a, b, l = map(int, input().split())  # a <-> b: 양방향 그래프, 길이 l
+    area[a][b] = l
+    area[b][a] = l
 
-dist = INF
-for t in range(1, v + 1):
-    if village[t][t] != INF:
-        if dist > village[t][t]:
-            dist = village[t][t]
+# 플로이드 워셜 점화식 구현
+for k in range(1, n + 1):
+    for i in range(1, n + 1):
+        for j in range(1, n + 1):
+            if area[i][j] > area[i][k] + area[k][j]:
+                area[i][j] = area[i][k] + area[k][j]
 
-print(dist if dist != INF else -1)
+ans = 0
+for y in range(1, n + 1):
+    total = 0
+    for x in range(1, n + 1):
+        # 수색 범위 이하이면 -> 아이템 획득 가능
+        if area[y][x] <= m:
+            total += items[x]
+    if ans < total:
+        ans = total
+
+print(ans)
