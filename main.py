@@ -3,39 +3,37 @@ from sys import stdin
 input = stdin.readline
 
 ## 변수 입력 부분 ##
-n, m = map(int, input().split())  # n: 도시의 개수, m: 도로의 개수
+tc = int(input().strip())  # 테스트 케이스
 INF = float('inf')
-matrix = [[INF] * (n + 1) for _ in range(n + 1)]
-for _ in range(m):
-    A, B, T = map(int, input().split())  # A -> B: T 시간
-    matrix[A][B] = T  # 단방향 인접행렬
+for _ in range(tc):
+    n, m = map(int, input().split())  # n: 방의 개수, m: 통로의 개수
+    matrix = [[INF] * (n + 1) for _ in range(n + 1)]
 
-for t in range(1, n + 1):
-    matrix[t][t] = 0
+    for v in range(1, n + 1):
+        matrix[v][v] = 0
 
-total = int(input().strip())  # 준형이와 친구들의 총 인원
-citys = list(map(int, input().split()))  # k명의 도시 번호
+    for _ in range(m):
+        a, b, c = map(int, input().split())  # a <-> b: 거리 c
+        matrix[a][b] = c
+        matrix[b][a] = c
 
-## 문제 해결 부분 ##
-for k in range(1, n + 1):
-    for i in range(1, n + 1):
-        for j in range(1, n + 1):
-            if matrix[i][j] > matrix[i][k] + matrix[k][j]:
-                matrix[i][j] = matrix[i][k] + matrix[k][j]
+    for k in range(1, n + 1):
+        for i in range(1, n + 1):
+            for j in range(1, n + 1):
+                if matrix[i][j] > matrix[i][k] + matrix[k][j]:
+                    matrix[i][j] = matrix[i][k] + matrix[k][j]
 
-ans = INF
-lst = []
-for v in range(1, n + 1):
-    temp = 0
-    for city in citys:
-        # 왕복 거리의 최댓값의 최소를 가지는 도시만을 구한다.
-        temp = max(temp, matrix[city][v] + matrix[v][city])
-    # 왕복 거리의 최댓값의 최소라면 -> 그 도시가 정답이다.
-    if ans > temp:
-        ans = temp
-        lst = [v]
-    # 왕복 거리의 최댓값의 최솟값이 같다면 -> append
-    elif ans == temp:
-        lst.append(v)
+    k = int(input().strip())  # k: 친구의 수
+    k_list = list(map(int, input().split()))  # k개의 방의 번호
 
-print(*lst, sep=" ")
+    temp = INF
+    ans = 0
+    for y in range(1, n + 1):
+        total = 0
+        for x in k_list:
+            total += matrix[x][y]
+        if temp > total:
+            temp = total
+            ans = y
+
+    print(ans)
