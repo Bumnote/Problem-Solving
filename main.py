@@ -1,39 +1,34 @@
-from sys import stdin
+from sys import stdin, maxsize
 
 input = stdin.readline
 
 ## 변수 입력 부분 ##
-tc = int(input().strip())  # 테스트 케이스
+n = int(input().strip())  # n: 전제의 개수
 INF = float('inf')
-for _ in range(tc):
-    n, m = map(int, input().split())  # n: 방의 개수, m: 통로의 개수
-    matrix = [[INF] * (n + 1) for _ in range(n + 1)]
+matrix = [[INF] * (58) for _ in range(58)]  # 알파벳의 개수 = 노드의 개수 = 26
 
-    for v in range(1, n + 1):
-        matrix[v][v] = 0
+## 자기 자신으로 가는 것은 0 으로 설정
+for t in range(58):
+    matrix[t][t] = 0
 
-    for _ in range(m):
-        a, b, c = map(int, input().split())  # a <-> b: 거리 c
-        matrix[a][b] = c
-        matrix[b][a] = c
+for _ in range(n):
+    s, _, e = input().split()  # 모든 s는 e이다. s -> e: 단방향 그래프
+    matrix[ord(s) - 65][ord(e) - 65] = 1
 
-    for k in range(1, n + 1):
-        for i in range(1, n + 1):
-            for j in range(1, n + 1):
-                if matrix[i][j] > matrix[i][k] + matrix[k][j]:
-                    matrix[i][j] = matrix[i][k] + matrix[k][j]
+# 플로이드 워셜 점화식 구현
+for k in range(58):
+    for i in range(58):
+        for j in range(58):
+            if matrix[i][j] > matrix[i][k] + matrix[k][j]:
+                matrix[i][j] = matrix[i][k] + matrix[k][j]
 
-    k = int(input().strip())  # k: 친구의 수
-    k_list = list(map(int, input().split()))  # k개의 방의 번호
+lst = []
+for y in range(58):
+    for x in range(58):
+        # 갈 수 있으면서, 자기 자신으로 향하는 방향이 아니라면 -> append()
+        if matrix[y][x] != INF and y != x:
+            lst.append((chr(y + 65), chr(x + 65)))
 
-    temp = INF
-    ans = 0
-    for y in range(1, n + 1):
-        total = 0
-        for x in k_list:
-            total += matrix[x][y]
-        if temp > total:
-            temp = total
-            ans = y
-
-    print(ans)
+print(len(lst))
+for s, e in lst:
+    print(f"{s} => {e}")
