@@ -10,7 +10,7 @@ matrix = [[INF] * (n + 1) for _ in range(n + 1)]
 for v in range(1, n + 1):
     matrix[v][v] = 0
 
-citys = [0]  # 도시 정보를 담는다. 
+citys = [0]  # 도시 정보를 담는다.
 for _ in range(n):
     s, x, y = map(int, input().split())  # s: 텔레포트 여부, (x, y): 위치
     citys.append((s, x, y))
