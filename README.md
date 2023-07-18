@@ -109,30 +109,25 @@ def Euclid_GCD(x, y):
 - 에라토스테네스의 체 -> 소수(prime)를 빠르게 판별해주는 알고리즘
 
 ```Python
+from math import isqrt
+
 n = 1000  # 2부터 1,000까지의 모든 수에 대하여 소수 판별
 primes = [False, False] + [True] * (n - 1)  # 처음엔 모든 수가 소수(True)인 것으로 초기화
 
-# 에라토스테네스의 체 알고리즘 
-for i in range(2, n):  # 2부터 n 까지의 모든 수를 확인 
-    if primes[i] == True:  # i가 소수인 경우 (남은 수인 경우)
-        # i를 제외한 i의 모든 배수를 지우기
-        j = 2
-        while i * j <= n:
-            primes[i * j] = False
-            j += 1
-```
+# 에라토스테네스의 체 알고리즘 (개선 -> 제곱근 활용)
+for i in range(2, isqrt(n) + 1):  # 2부터 n 제곱근까지의 수를 확인 
+    if not primes[i]:  # i가 소수가 아닌 경우 -> continue 
+        continue 
+    
+    for j in range(2*i, n + 1, i):
+        primes[i] = False # 소수가 아님을 표시 
 
-- 제곱근을 이용한 소수 판별
-
-```python
-from math import sqrt
-
-def isPrime(n):
-    for i in range(2, int(sqrt(n) + 1)):
-        if n % i == 0:
-            return False
-
-    return True 
+"""
+* 제곱근까지만 탐색하는 이유
+-> N = a * b 인 경우, a != b 일 때, 크기가 더 작은 약수는 N 제곱근을 넘을 수 없다.
+-> 또한, N보다 작은 합성수의 경우에도 크기가 더 작은 약수는 N 제곱근보다 클 수 없다.
+-> 따라서, N 제곱근까지만 탐색하여도 에라토스테네스의 체를 완성시킬 수 있다.
+"""
 ```
 
 - 플로이드 워셜 점화식
