@@ -3,31 +3,43 @@ from collections import deque
 
 input = stdin.readline
 
-N, M = map(int, input().split())  # N x M 행렬
-matrix = [list(map(int, input().strip())) for _ in range(N)]  # 0: 이동 x, 1: 이동 o
+v = int(input().strip())  # v: 정점의 개수
+vertex = [[] for _ in range(v + 1)]
+
+# 정점들의 관계 저장
+for _ in range(v):
+    info = list(map(int, input().split()))
+    v1 = info[0]
+    for i in range(1, len(info) - 1, 2):
+        v2, w = info[i], info[i + 1]
+        vertex[v1].append((v2, w))  # 단방향으로 입력
 
 
-def bfs(y, x):
+def bfs(x):
     deq = deque()
-    deq.append((y, x, 1))
-    visited = [[True] * M for _ in range(N)]
-    visited[y][x] = False  # 방문 처리
+    deq.append((x, 0))
+    visited = [True] * (v + 1)
+    visited[x] = False  # 방문 처리
 
+    dist = -1
+    node = -1
     while deq:
-        cur_y, cur_x, cur_cnt = deq.popleft()
+        cur_x, cur_dist = deq.popleft()
 
-        if cur_y == N - 1 and cur_x == M - 1:
-            return cur_cnt
+        if dist < cur_dist:
+            dist = cur_dist
+            node = cur_x
 
-        for dy, dx in ((1, 0), (-1, 0), (0, 1), (0, -1)):
-            new_y, new_x = cur_y + dy, cur_x + dx
+        for nxt, w in vertex[cur_x]:
+            # 방문이 가능하다면 -> append
+            if visited[nxt]:
+                visited[nxt] = False  # 방문 처리
+                deq.append((nxt, cur_dist + w))  # 가중치를 더해간다.
 
-            if new_y < 0 or new_y >= N or new_x < 0 or new_x >= M or not visited[new_y][new_x] or matrix[new_y][
-                new_x] == 0:
-                continue
-
-            visited[new_y][new_x] = False  # 방문처리
-            deq.append((new_y, new_x, cur_cnt + 1))
+    return dist, node
 
 
-print(bfs(0, 0))
+# 임의의 노드에서 가장 거리가 긴 노드는 트리의 지름을 이루는 두 노드 중 하나이다.
+dist, node = bfs(1)
+ans, temp = bfs(node)
+print(ans)
