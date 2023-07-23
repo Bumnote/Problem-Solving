@@ -2,6 +2,9 @@ from sys import stdin
 
 input = stdin.readline
 
+n, s = map(int, input().split())  # n: 동생 수, s:수빈 위치
+pos_l = list(map(lambda x: abs(s - x), map(int, input().split())))
+
 
 def get_gcd(a, b):
     if a < b:
@@ -13,8 +16,8 @@ def get_gcd(a, b):
     return get_gcd(b, a % b)
 
 
-tc = int(input().strip())  # tc: 테스트 케이스
+ans = pos_l[0]
+for num in pos_l:
+    ans = get_gcd(ans, num)
 
-for _ in range(tc):
-    a, b = map(int, input().split())  # a, b의 최대 공약수를 구하자.
-    print(get_gcd(a, b))  # 유클리드 호제법 구현
+print(ans)
