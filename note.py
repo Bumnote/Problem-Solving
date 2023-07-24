@@ -1,21 +1,29 @@
 from sys import stdin
-from math import isqrt
+from heapq import heappush, heappop
 
 input = stdin.readline
 
-n = int(input().strip())  # n 이하의 n과 서로소인 자연수를 구하자.
-ans = n
+N, M, K = map(int, input().split())  # N: 기간, M: 선호도 합, K: 맥주의 종류
+pq = []
+for _ in range(K):
+    v, c = map(int, input().split())  # v: 선호도, c: 도수
+    heappush(pq, (c, -v))  # 도수는 낮은 순서, 선호도는 높은 순서
 
-# 해당 수의 제곱근까지만 탐색한다.
-for i in range(2, isqrt(n) + 1):
-    if n % i == 0:
-        ans -= ans // i  # i를 약수로 가지는 수들 제거
-        while n % i == 0:
-            n //= i  # 숫자 n의 소인수에서 i를 모두 제거
+flavor = []
+flag = False
+while pq:
+    c, v = heappop(pq)
+    print(f"c = {c} / v = {v}")
+    flavor.append(-v)
+    if len(flavor) == N:
+        if sum(flavor) >= M:
+            flag = True
+            break
+        else:
+            # 선호도가 가장 낮은 것을 pop
+            heappop(flavor)
 
-# 제곱근보다 큰 소인수가 존재하는 경우 -> 제거
-# 제곱근보다 큰 소인수가 있다면, 반드시 하나만 존재한다.
-if n > 1:
-    ans -= ans // n
-
-print(ans)
+if flag:
+    print(c)
+else:
+    print(-1)
