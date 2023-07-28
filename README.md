@@ -1,10 +1,14 @@
 ## &nbsp;&nbsp;Problem-Solving (Language: Python)
-## &nbsp;&nbsp;Sites 
+
+## &nbsp;&nbsp;Sites
+
 - 백준 -> https://www.acmicpc.net/
 - SW Expert Academy -> https://swexpertacademy.com/main/main.do
 - 프로그래머스 -> https://programmers.co.kr/
+
 --- 
-##           * 실행 시간과 관련하여 *
+
+##            * 실행 시간과 관련하여 *
 
 ```python
 # 실행 시간을 빠르게 하는 방법 - 1
@@ -35,7 +39,7 @@ num_set = []
 
 ```
 
-##               * 알아두면 좋은 것들 *
+##                * 알아두면 좋은 것들 *
 
 ```Python 
 ## 문자열을 올바르게 입력받고, 파일의 끝(EOF)을 올바르게 판단하는 법 ## 
@@ -52,7 +56,7 @@ stdin.readline() # EOF를 받을 때, 빈 문자열을 반환한다.
 # 따라서, 적당한 메모리 크기를 계산하여 할당받도록 하자. -> 메모리 초과의 원인
 ```
 
-##               * 자주 사용하는 라이브러리 정리 * 
+##                * 자주 사용하는 라이브러리 정리 * 
 
 ```Python
 from collections import deque  # 너비 우선 탐색(= BFS) 구현 시 활용 
@@ -88,9 +92,9 @@ n = floor(n)  # 내림 함수
 n = ceil(n)  # 올림 함수 
 ```
 
-##               * 자주 사용하는 알고리즘 정리 *
+##                * 자주 사용하는 알고리즘 정리 *
 
-- 유클리드 알고리즘 -> 최대 공약수를 빠르게 찾는 알고리즘
+- 유클리드 알고리즘 -> 최대 공약수를 빠르게 찾는 알고리즘 O(log n)
 
 ```Python
 def Euclid_GCD(x, y):
@@ -106,7 +110,7 @@ def Euclid_GCD(x, y):
     return Euclid_GCD(y, x % y)
 ```
 
-- 에라토스테네스의 체 -> 소수(prime)를 빠르게 판별해주는 알고리즘
+- 에라토스테네스의 체 -> 소수(prime)를 빠르게 판별해주는 알고리즘 O(n log(log n))
 
 ```Python
 from math import isqrt
@@ -117,10 +121,10 @@ primes = [False, False] + [True] * (n - 1)  # 처음엔 모든 수가 소수(Tru
 # 에라토스테네스의 체 알고리즘 (개선 -> 제곱근 활용)
 for i in range(2, isqrt(n) + 1):  # 2부터 n 제곱근까지의 수를 확인 
     if not primes[i]:  # i가 소수가 아닌 경우 -> continue 
-        continue 
-    
-    for j in range(2*i, n + 1, i):
-        primes[i] = False # 소수가 아님을 표시 
+        continue
+
+    for j in range(2 * i, n + 1, i):
+        primes[i] = False  # 소수가 아님을 표시 
 
 """
 * 제곱근까지만 탐색하는 이유
@@ -130,10 +134,50 @@ for i in range(2, isqrt(n) + 1):  # 2부터 n 제곱근까지의 수를 확인
 """
 ```
 
-- 플로이드 워셜 점화식
-```python
+- 플로이드 워셜 점화식 O(n^3)
+
+```python 
 for k in range(n):
     for i in range(n):
         for j in range(n):
             MAP[i][j] = min(MAP[i][j], MAP[i][k] + MAP[k][j])
+```
+
+- 이진 탐색 O(log n)
+ 
+```python
+# lower_bound -> target 이상의 값이 최초로 나오는 위치 반환
+n_list = []
+def lower_bound(target):
+    left = 0
+    right = len(n_list) - 1
+    min_idx = len(n_list)
+
+    while left <= right:
+        mid = (left + right) // 2
+        # target 이상인 값에서만 위치 갱신
+        if target <= n_list[mid]:
+            right = mid - 1
+            min_idx = min(min_idx, mid)
+        else:
+            left = mid + 1
+
+    return min_idx
+
+# upper_bound -> target 초과하는 값이 최초로 나오는 위치 반환
+def upper_bound(target):
+    left = 0
+    right = len(n_list) - 1
+    min_idx = len(n_list)
+
+    while left <= right:
+        mid = (left + right) // 2
+        # target 초과한 경우에만 위치 갱신
+        if target < n_list[mid]:
+            right = mid - 1
+            min_idx = min(min_idx, mid)
+        else:
+            left = mid + 1
+
+    return min_idx
 ```
