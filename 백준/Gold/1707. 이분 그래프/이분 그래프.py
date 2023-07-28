@@ -40,6 +40,8 @@ for _ in range(tc):
     flag = True
     # 비연결 그래프일 수 있으므로, 모든 노드를 기준으로 탐색
     for i in range(1, V + 1):
+        if not flag:
+            break
         if visited[i]:
             isbinarygraph(i, 1)
 
