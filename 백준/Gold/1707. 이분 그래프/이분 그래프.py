@@ -1,35 +1,26 @@
-from sys import stdin
-from collections import deque
+from sys import stdin, setrecursionlimit
+
+setrecursionlimit(2 * (10 ** 4))
 
 input = stdin.readline
 
 
-def isbinarygraph(x):
-    deq = deque()
-    deq.append((x, 1))
-    visited[x] = False  # 방문 처리
-    color = [0] * (V + 1)  # 1과 2로 색을 구별
-    while deq:
-        cur_x, cur_cnt = deq.popleft()
+def isbinarygraph(x, cnt):
+    global flag
+    visited[x] = False  # 현재 노드 방문 처리
 
-        # 현재 노드마다 색깔을 정해준다.
-        if cur_cnt % 2 == 1:
-            color[cur_x] = 1
+    color[x] = 1 if cnt % 2 == 1 else 0
+
+    for nxt in vertex[x]:
+        # 다음 노드로 방문이 가능하다면 -> 깊이 탐색 ㄴ
+        if visited[nxt]:
+            isbinarygraph(nxt, cnt + 1)
+        # 이미 방문했던 노드라면 -> 색깔 확인
         else:
-            color[cur_x] = 2
-
-        for nxt in vertex[cur_x]:
-            if visited[nxt]:
-                visited[nxt] = False  # 방문 처리
-                deq.append((nxt, cur_cnt + 1))
-            else:
-                # 이미 방문한 곳이면서, 색깔이 다른 경우면 pass
-                if color[cur_x] != color[nxt]:
-                    pass
-                # 이미 방문한 곳이면서, 색깔이 같은 경우면 -> 사이클 존재
-                else:
-                    return False
-    return True
+            # 방문했던 인접 노드와 색깔이 같다면 -> 이분 그래프 X
+            if color[x] == color[nxt]:
+                flag = False
+                return
 
 
 tc = int(input().strip())  # tc: 테스트 케이스
@@ -38,6 +29,7 @@ for _ in range(tc):
     V, E = map(int, input().split())
     vertex = [[] for _ in range(V + 1)]
     visited = [True] * (V + 1)
+    color = [0] * (V + 1)
 
     for _ in range(E):
         u, v = map(int, input().split())
@@ -49,12 +41,8 @@ for _ in range(tc):
     # 비연결 그래프일 수 있으므로, 모든 노드를 기준으로 탐색
     for i in range(1, V + 1):
         if visited[i]:
-            if isbinarygraph(i):
-                continue
-            else:
-                flag = False
-                break
-        
+            isbinarygraph(i, 1)
+
     if flag:
         print("YES")
     else:
