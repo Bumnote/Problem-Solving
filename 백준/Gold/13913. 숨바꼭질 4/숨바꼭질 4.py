@@ -12,7 +12,7 @@ def bfs(N, K):
     dq = deque()
     dq.append((N, 0))
     visited[N] = "*"  # 방문 처리
-    ans = deque()
+    ans = deque()  # 경로를 담을 덱 
     while dq:
         cur_x, cur_cnt = dq.popleft()
 
@@ -20,8 +20,8 @@ def bfs(N, K):
         if cur_x == K:
             print(cur_cnt)  # 최소 이동 시간 출력
             while True:
-                ans.appendleft(cur_x)
-
+                ans.appendleft(cur_x)  # 역순으로 출력하기 위해서 왼쪽부터 append
+                # 시작 위치인 N에 도착하면 -> 경로 출력 후 return 
                 if visited[cur_x] == "*":
                     print(*ans)
                     return
