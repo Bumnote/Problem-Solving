@@ -29,9 +29,8 @@ def bfs(A, B):
 
         D_A = (cur_A * 2) % 10_000 if cur_A * 2 > 9999 else cur_A * 2
         S_A = 9999 if cur_A == 0 else cur_A - 1
-        STR_A = "0" * (4 - len(str(cur_A))) + str(cur_A)  # 부족한 0의 개수를 채워준다.
-        L_A = int(STR_A[1:] + STR_A[0])
-        R_A = int(STR_A[-1] + STR_A[:-1])
+        L_A = (cur_A % 1000) * 10 + (cur_A // 1000)
+        R_A = (cur_A % 10) * 1000 + (cur_A // 10)
 
         for nxt, c in ((D_A, "D"), (S_A, "S"), (L_A, "L"), (R_A, "R")):
             # 범위를 넘지 않고, 방문한 적이 없다면 -> 다음 숫자로 이동
