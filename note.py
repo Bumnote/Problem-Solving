@@ -1,25 +1,32 @@
-from sys import stdin
+from sys import stdin, setrecursionlimit
 
+setrecursionlimit(10_000)
 input = stdin.readline
 
-
-def get_gcd(a, b):
-    if a < b:
-        a, b = b, a
-    if b == 0:
-        return a
-    return get_gcd(b, a % b)
+N, M = map(int, input().split())  # N x M MAP
+MAP = [list(map(int, input().split())) for _ in range(N)]
+visited = [[True] * M for _ in range(N)]
+visited[0][0] = False  # 출발점 방문 표시
+cnt = 0
 
 
-T = int(input().strip())  # T: 테스트 케이스
-# Ax + By = C 의 해를 구할 수 있는 지 문제
-for _ in range(T):
-    A, B, C = map(int, input().split())
+def dfs(y, x):
+    global cnt
 
-    gcd = get_gcd(A, B)
-    # 최대 공약수가 C의 배수가 아니면 -> 해를 구할 수 없다.
-    if C % gcd != 0:
-        print("No")
-    # 최대 공약수가 C의 배수이면 -> 해를 구할 수 있다.
-    else:
-        print("Yes")
+    if y == N - 1 and x == M - 1:
+        cnt += 1
+
+    for dy, dx in ((0, 1), (0, -1), (1, 0), (-1, 0)):
+        new_y, new_x = y + dy, x + dx
+        # 범위를 넘는 경우 -> 탐색하지 않는다.
+        if new_y < 0 or new_y >= N or new_x < 0 or new_x >= M:
+            continue
+        # 방문 가능하고, 현재 위치보다 낮은 지역이라면 -> 탐색을 시도한다.
+        if visited[new_y][new_x] and MAP[y][x] > MAP[new_y][new_x]:
+            visited[new_y][new_x] = False  # 방문 표시
+            dfs(new_y, new_x)
+            visited[new_y][new_x] = True  # 복원 표시
+
+
+dfs(0, 0)
+print(cnt)
