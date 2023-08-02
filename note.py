@@ -1,49 +1,41 @@
-from sys import stdin
+from sys import stdin, setrecursionlimit
 
+setrecursionlimit(10 ** 5)  # 재귀 깊이 확장
 input = stdin.readline
 
+n, k = map(int, input().split())  # n: 정점의 수, k: 깊이가 궁금한 정점
+vertex = [[] for _ in range(n)]
+visited = [True] * n
 
-def dfs(node):
-    global v_cnt, e_cnt
+# 0번 정점이 루트인 트리
+visited[0] = False  # 루트 방문 처리
+for _ in range(n - 1):
+    v1, v2 = map(int, input().split())  # v1 <-> v2: 양방향 그래프
+    vertex[v1].append(v2)
+    vertex[v2].append(v1)
 
-    for nxt in vertex[node]:
-        # 다음 노드로 방문이 가능하다면 -> dfs 탐색
+
+def dfs(root, target, cnt):
+    ans = 0
+    for nxt in vertex[root]:
+        # 다음 노드로 방문이 가능하다면 -> 깊이 탐색
         if visited[nxt]:
-            v_cnt += 1  # 정점의 개수 증가
-            e_cnt += len(vertex[nxt])  # 간선의 개수 증가
             visited[nxt] = False  # 방문 처리
-            dfs(nxt)
+            if nxt == target:
+                return cnt + 1
+            ans = dfs(nxt, target, cnt + 1)
+
+    return ans
 
 
-tc = 1
-while True:
-    n, m = map(int, input().split())  # n: 정점 수, m: 간선 수
-    if n == 0 and m == 0:
-        break
+n_list = list(map(int, input().split()))
+root, target = 0, 0
+for i in range(n):
+    # 0번을 부여받은 정점에서 부터 탐색 시작해야한다.
+    if n_list[i] == 0:
+        root = i
+    # k번을 부여받은 정점의 깊이를 구해야한다.
+    if n_list[i] == k:
+        target = i
 
-    vertex = [[] for _ in range(n + 1)]
-    visited = [True] * (n + 1)
-    for _ in range(m):
-        s, e = map(int, input().split())  # s <-> e: 양방향 그래프
-        vertex[s].append(e)
-        vertex[e].append(s)
-
-    cnt = 0
-    for i in range(1, n + 1):
-        # 아직 방문한 적이 없는 노드라면 -> dfs 탐색
-        if visited[i]:
-            v_cnt, e_cnt = 1, len(vertex[i])  # 정점의 개수, 간선의 개수
-            visited[i] = False  # 방문 처리
-            dfs(i)
-            # 트리의 성질을 만족한다면 -> 트리의 개수 증가
-            if (v_cnt - 1) * 2 == e_cnt:
-                cnt += 1
-
-    if cnt == 0:
-        print(f"Case {tc}: No trees.")
-    elif cnt == 1:
-        print(f"Case {tc}: There is one tree.")
-    else:
-        print(f"Case {tc}: A forest of {cnt} trees.")
-
-    tc += 1  # 테스트 케이스 증가
+print(dfs(root, target, 0))
