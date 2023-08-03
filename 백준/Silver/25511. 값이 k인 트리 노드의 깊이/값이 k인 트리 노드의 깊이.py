@@ -1,23 +1,26 @@
-import sys
-sys.setrecursionlimit(10**5)
-input = sys.stdin.readline
+from sys import stdin, setrecursionlimit
+
+setrecursionlimit(10 ** 5)
+input = stdin.readline
 result = 0
 
 
-def dfs(v, c):
+def dfs(root, cnt):
     global result
-    if v_[v] == k:
-        result = c
-    for i in arr[v]:
-        dfs(i, c + 1)
+    if v_list[root] == k:
+        result = cnt
+
+    for nxt in vertex[root]:
+        dfs(nxt, cnt + 1)
 
 
-n, k = map(int, input().split())
-arr = [[] for i in range(n)]
+n, k = map(int, input().split())  # n: 정점의 수, k: 목표 노드 번호ㄴ
+vertex = [[] for i in range(n)]
 for i in range(n - 1):
-    a, b = map(int, input().split())
-    arr[a].append(b)
-v_ = list(map(int, input().split()))
+    p, c = map(int, input().split())  # p -> c: 단방향 그래프
+    vertex[p].append(c)
+
+v_list = list(map(int, input().split()))
 
 dfs(0, 0)
 print(result)
