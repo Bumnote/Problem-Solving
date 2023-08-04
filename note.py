@@ -1,26 +1,23 @@
-from sys import stdin, setrecursionlimit
+from sys import stdin
+from collections import deque
 
-setrecursionlimit(10 ** 5)
 input = stdin.readline
-result = 0
 
+T = int(input().strip())  # T: 테스트 케이스
 
-def dfs(root, cnt):
-    global result
-    if v_list[root] == k:
-        result = cnt
+for _ in range(T):
+    N = int(input().strip())  # N: 카드의 개수
+    N_list = deque((input().split()))
 
-    for nxt in vertex[root]:
-        dfs(nxt, cnt + 1)
+    answer = N_list.popleft()
 
+    while N_list:
+        temp = N_list.popleft()
+        # 가장 첫번째 있는 숫자보다 사전순으로 빠르다면 -> 앞에 append
+        if ord(temp) <= ord(answer[0]):
+            answer = temp + answer
+        # 가장 첫번째 있는 숫자보다 사전으로 느리다면 -> 뒤에 append
+        else:
+            answer = answer + temp
 
-n, k = map(int, input().split())  # n: 정점의 수, k: 목표 노드 번호
-vertex = [[] for i in range(n)]
-for i in range(n - 1):
-    p, c = map(int, input().split())  # p -> c: 단방향 그래프
-    vertex[p].append(c)
-
-v_list = list(map(int, input().split()))
-
-dfs(0, 0)
-print(result)
+    print(answer)
