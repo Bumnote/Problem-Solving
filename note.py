@@ -1,23 +1,20 @@
 from sys import stdin
-from collections import deque
 
 input = stdin.readline
 
-T = int(input().strip())  # T: 테스트 케이스
+N, M, Q = map(int, input().split())  # N x M 행렬, Q: 연산 개수
+R = [0] * N  # R행 배열
+C = [0] * M  # C열 배열
+for _ in range(Q):
+    a, b, v = map(int, input().split())  # 1 r v / 2 c v
+    # a == 1 -> b번째 행의 모든 원소에 v를 더한다.
+    if a == 1:
+        R[b - 1] += v
+    # a == 2 -> b번째 열의 모든 원소에 v를 더한다.
+    else:
+        C[b - 1] += v
 
-for _ in range(T):
-    N = int(input().strip())  # N: 카드의 개수
-    N_list = deque((input().split()))
-
-    answer = N_list.popleft()
-
-    while N_list:
-        temp = N_list.popleft()
-        # 가장 첫번째 있는 숫자보다 사전순으로 빠르다면 -> 앞에 append
-        if ord(temp) <= ord(answer[0]):
-            answer = temp + answer
-        # 가장 첫번째 있는 숫자보다 사전으로 느리다면 -> 뒤에 append
-        else:
-            answer = answer + temp
-
-    print(answer)
+for y in range(N):
+    for x in range(M):
+        print(R[y] + C[x], end=" ")
+    print()
