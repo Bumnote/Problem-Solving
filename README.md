@@ -143,6 +143,26 @@ for k in range(n):
             MAP[i][j] = min(MAP[i][j], MAP[i][k] + MAP[k][j])
 ```
 
+- 다익스트라 알고리즘 핵심 로직 O(E * logV)
+```python
+while pq:
+    min_dist, cur_v = heappop(pq)  # 거리 기준 최솟값 pop
+
+    # 현 정점까지의 가장 최단 거리(dist[cur_v])가 pop된 거리 정보와 다르다면
+    # 같은 정점에 대한 정보가 최신화가 안 되어있는 정보이기 때문에 continue
+    # heapq는 최솟값만을 pop하기 때문에 이런 문제가 발생할 수 있다.
+    if dist[cur_v] != min_dist:
+        continue
+
+    for nxt_v, nxt_dist in vertex[cur_v].items():
+        new_dist = dist[cur_v] + nxt_dist  # 다음 정점으로 가는 최단 거리 후보
+
+        # 다음 정점까지 갈 때, 최단거리라고 생각했던 정보보다 더 값이 작으면 -> 갱신
+        if new_dist < dist[nxt_v]:
+            dist[nxt_v] = new_dist  # 거리 정보 갱신
+            heappush(pq, (new_dist, nxt_v))
+```
+
 - 이진 탐색 O(log n)
  
 ```python
