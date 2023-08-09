@@ -6,7 +6,7 @@ input = stdin.readline
 INF = maxsize
 # 정점의 개수가 너무 크므로, 플로이드 워셜보다는 다익스트라 구현
 N = int(input().strip())  # N: 땅의 개수 (1 <= N <= 100_000)
-A, B, C = map(int, input().split())  # 친구 A, B, C 의 위치
+live = set(map(int, input().split()))  # 친구 A, B, C 의 위치
 
 house = [[] for _ in range(N + 1)]
 M = int(input().strip())  # M: 도로의 개수
@@ -18,7 +18,7 @@ for _ in range(M):
 # A, B, C 로부터 모든 집까지 탐색 -> 즉, 다익스트라 3번
 h_dist = [INF] * (N + 1)
 # 다익스트라 알고리즘
-for i in (A, B, C):
+for i in live:
     dist = [INF] * (N + 1)
     dist[i] = 0
     pq = [(0, i)]
