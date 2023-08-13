@@ -1,15 +1,20 @@
-l = []
-a = []
-maxi = 0
-for i in range(8):
-    l.append(int(input()))
+from sys import stdin
 
-for i in range(5):
-    a.append(l.index(max(l))+1)
-    maxi += l[l.index(max(l))]
-    l[l.index(max(l))] = 0
-a.sort()
-print(maxi)
+input = stdin.readline
 
-for i in a:
-    print(i, end=" ")
+total = 0
+n_list = [int(input().strip()) for _ in range(8)]
+
+ans = []
+for i, n in enumerate(n_list, start=1):
+    ans.append((n, i))
+
+ans = (sorted(ans, reverse=True)[:5])
+ans.sort(key=lambda x: x[1])
+nums = []
+for elem, index in ans:
+    total += elem
+    nums.append(index)
+
+print(total)
+print(*nums)
