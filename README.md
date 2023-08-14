@@ -8,7 +8,7 @@
 
 --- 
 
-##            * 실행 시간과 관련하여 *
+##              * 실행 시간과 관련하여 *
 
 ```python
 # 실행 시간을 빠르게 하는 방법 - 1
@@ -39,7 +39,7 @@ num_set = []
 
 ```
 
-##                * 알아두면 좋은 것들 *
+##                  * 알아두면 좋은 것들 *
 
 ```Python 
 ## 문자열을 올바르게 입력받고, 파일의 끝(EOF)을 올바르게 판단하는 법 ## 
@@ -56,7 +56,7 @@ stdin.readline() # EOF를 받을 때, 빈 문자열을 반환한다.
 # 따라서, 적당한 메모리 크기를 계산하여 할당받도록 하자. -> 메모리 초과의 원인
 ```
 
-##                * 자주 사용하는 라이브러리 정리 * 
+##                  * 자주 사용하는 라이브러리 정리 * 
 
 ```Python
 from collections import deque  # 너비 우선 탐색(= BFS) 구현 시 활용 
@@ -92,7 +92,7 @@ n = floor(n)  # 내림 함수
 n = ceil(n)  # 올림 함수 
 ```
 
-##                * 자주 사용하는 알고리즘 정리 *
+##                  * 자주 사용하는 알고리즘 정리 *
 
 - 유클리드 알고리즘 -> 최대 공약수를 빠르게 찾는 알고리즘 O(log n)
 
@@ -143,7 +143,8 @@ for k in range(n):
             MAP[i][j] = min(MAP[i][j], MAP[i][k] + MAP[k][j])
 ```
 
-- 다익스트라 알고리즘 핵심 로직 O(E * logV)
+- 다익스트라 알고리즘(heapq ver.) 핵심 로직 O(E * logV)
+
 ```python
 while pq:
     min_dist, cur_v = heappop(pq)  # 거리 기준 최솟값 pop
@@ -163,11 +164,38 @@ while pq:
             heappush(pq, (new_dist, nxt_v))
 ```
 
+- 다익스트라 알고리즘(for loop ver.) 핵심 로직 O(V * V)
+
+```python
+visited = [True] * (n + 1)  # 한번 방문한 정점은 방문하지 않는다.
+for i in range(1, n + 1):
+    # 거리가 가장 작은 정점을 찾는다. (최초 시 시작 정점)
+    temp, cur_v = INF, 0
+    for j in range(1, n + 1):
+        # 방문이 가능하고, temp값보다 작으면 -> 값과 인덱스 갱신
+        if visited[j] and temp > dist[j]:
+            temp = dist[j]
+            cur_v = j
+
+    # 가장 작은 거리를 가진 정점에 방문
+    visited[cur_v] = False  # 방문 처리
+
+    for j in range(1, n + 1):
+        # 간선이 존재하지 않는 경우 -> continue
+        if vertex[cur_v][j] == 0:
+            continue
+
+        # cur_v -> j 간선이 존재하는 경우 -> 필요 시 거리 갱신
+        dist[j] = min(dist[j], dist[cur_v] + vertex[cur_v][j])
+```
+
 - 이진 탐색 O(log n)
- 
+
 ```python
 # lower_bound -> target 이상의 값이 최초로 나오는 위치 반환
 n_list = []
+
+
 def lower_bound(target):
     left = 0
     right = len(n_list) - 1
@@ -183,6 +211,7 @@ def lower_bound(target):
             left = mid + 1
 
     return min_idx
+
 
 # upper_bound -> target 초과하는 값이 최초로 나오는 위치 반환
 def upper_bound(target):
