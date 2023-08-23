@@ -3,45 +3,36 @@ from collections import deque
 
 input = stdin.readline
 
-n = int(input().strip())  # n: 명령의 수
+n = int(input().strip())  # n x n MAP
 
-dq = deque()
-for _ in range(n):
-    command = list(input().split())
-    if len(command) == 2:
-        # 정수 X를 덱의 앞에 삽입
-        if command[0] == "1":
-            dq.appendleft(command[1])
-        # 정수 X를 덱의 뒤에 삽입
-        else:
-            dq.append(command[1])
+MAP = [list(map(int, input().split())) for _ in range(n)]
 
-    else:
-        num = int(command.pop())
-        if num == 3:
-            if dq:
-                print(dq.popleft())
-            else:
-                print(-1)
-        elif num == 4:
-            if dq:
-                print(dq.pop())
-            else:
-                print(-1)
-        elif num == 5:
-            print(len(dq))
-        elif num == 6:
-            if dq:
-                print(0)
-            else:
-                print(1)
-        elif num == 7:
-            if dq:
-                print(dq[0])
-            else:
-                print(-1)
-        else:
-            if dq:
-                print(dq[-1])
-            else:
-                print(-1)
+
+def bfs(y, x):
+    visited = [[True] * n for _ in range(n)]
+    visited[y][x] = False  # 출발점 방문 표시
+    dq = deque([(y, x)])
+
+    while dq:
+        cur_y, cur_x = dq.popleft()
+
+        if cur_y == n - 1 and cur_x == n - 1:
+            return True
+
+        l = MAP[cur_y][cur_x]
+
+        for dy, dx in ((0, l), (l, 0)):
+            new_y, new_x = cur_y + dy, cur_x + dx
+            # 범위를 넘거나, 이미 방문했던 곳이라면 -> 탐색하지 않는다.
+            if new_y < 0 or new_y >= n or new_x < 0 or new_x >= n or not visited[new_y][new_x]:
+                continue
+            visited[new_y][new_x] = False
+            dq.append((new_y, new_x))
+
+    return False
+
+
+if bfs(0, 0):
+    print("HaruHaru")
+else:
+    print("Hing")
