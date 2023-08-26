@@ -1,8 +1,4 @@
-from sys import stdin
+from sys import stdin, maxsize
+from heapq import heappush, heappop
 
 input = stdin.readline
-
-n = int(input().strip())  # n: 입력의 크기
-
-print(1)
-print(0)
