@@ -1,36 +1,50 @@
-from sys import stdin, maxsize
-from heapq import heappush, heappop
+from sys import stdin
 
 input = stdin.readline
-INF = maxsize
 
 
-# 다익스트라 알고리즘 구현
-def dijkstra(i, j):
-    dist = [INF] * (t + 1)
-    dist[i] = 0
-    pq = [(0, i)]
+def dfs(cur_v):
+    global res
 
-    while pq:
-        min_dist, cur_v = heappop(pq)
-        if dist[cur_v] != min_dist:
-            continue
-
-        for nxt_v, nxt_dist in vertex[cur_v]:
-            new_dist = dist[cur_v] + nxt_dist
-            if new_dist < dist[nxt_v]:
-                dist[nxt_v] = new_dist
-                heappush(pq, (new_dist, nxt_v))
-
-    return dist[j]
+    for nxt_v in vertex[cur_v]:
+        # 방문이 가능하다면 -> dfs 탐색
+        if visited[nxt_v]:
+            visited[nxt_v] = False  # 방문 처리
+            res.append(nxt_v)
+            dfs(nxt_v)
 
 
-t, c, ts, te = map(int, input().split())  # t: 마을의 수, c: 연결 수 , ts: 시점, te: 종점
-vertex = [[] for _ in range(t + 1)]
-for _ in range(c):
-    r1, r2, c = map(int, input().split())
-    vertex[r1].append((r2, c))
-    vertex[r2].append((r1, c))
+n = int(input().strip())  # n: 도시의 수
+m = int(input().strip())  # m: 계획에 속한 도시의 수
 
-# ts 마을에서 -> te 마을까지의 최단 거리를 출력
-print(dijkstra(ts, te))
+vertex = [[] for _ in range(n + 1)]  # 친구 관계 -> 연결 리스트
+
+# 친구 관계 설정
+for i in range(1, n + 1):
+    rel = [0] + list(map(int, input().split()))
+    for j in range(1, n + 1):
+        if rel[j] == 1:
+            vertex[i].append(j)
+
+plan = list(map(int, input().split()))  # plan: 여행 계획한 도시 번호
+
+visited = [True] * (n + 1)
+flag = None
+for i in range(1, n + 1):
+    if visited[i]:
+        visited[i] = False  # 방문 처리
+        res = [i]
+        dfs(i)
+        flag = True
+        for elem in plan:
+            if elem not in res:
+                flag = False
+                break
+
+        if flag:
+            break
+
+if flag:
+    print("YES")
+else:
+    print("NO")
