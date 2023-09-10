@@ -2,33 +2,34 @@ from sys import stdin
 
 input = stdin.readline
 
-n = int(input().strip())  # n: 집의 크기
-MAP = [list(map(int, input().split())) for _ in range(n)]
-dp = [[[0 for _ in range(n)] for _ in range(n)] for _ in range(3)]
 
-# 0: 가로, 1: 대각선, 2: 세로
-dp[0][0][1] = 1  # 초기화
-for i in range(2, n):
-    # 벽이 아니라면 -> 가로로 파이프를 놓을 수 있다.
-    if MAP[0][i] == 0:
-        dp[0][0][i] = 1
-    # 벽을 만난다면 -> 더 이상, 가로로 파이프를 놓을 수 없다.
-    else:
-        break
+def dfs(s, e, d):
+    global dist
 
-# dp 진행
-for i in range(1, n):
-    for j in range(1, n):
-        # 벽이 아니라면 -> dp 진행
-        if MAP[i][j] == 0:
-            # 가로로 놓을 수 있는 경우 (->->, \->)
-            dp[0][i][j] = dp[0][i][j - 1] + dp[1][i][j - 1]
+    if s == e:
+        dist = d
+        return
 
-            # 세로로 놓을 수 있는 경우 ( | |, \ |)
-            dp[2][i][j] = dp[2][i - 1][j] + dp[1][i - 1][j]
+    for nxt_v, nxt_dist in vertex[s]:
+        # 방문이 가능하다면 -> 깊이 우선 탐색
+        if visited[nxt_v]:
+            visited[nxt_v] = False  # 방문 처리
+            dfs(nxt_v, e, d + nxt_dist)
 
-            # 대각선으로 놓을 수 있는 경우 (공간이 필요) (-\, \ \, |\)
-            if MAP[i - 1][j] == 0 and MAP[i][j] == 0 and MAP[i][j - 1] == 0:
-                dp[1][i][j] = dp[0][i - 1][j - 1] + dp[1][i - 1][j - 1] + dp[2][i - 1][j - 1]
 
-print(dp[0][n - 1][n - 1] + dp[1][n - 1][n - 1] + dp[2][n - 1][n - 1])
+n, m = map(int, input().split())  # n: 노드의 개수, m: 거리를 알고 싶은 노드 쌍의 개수
+vertex = [[] for _ in range(n + 1)]
+
+for _ in range(n - 1):
+    v1, v2, d = map(int, input().split())  # v1 <-> v2: 거리 d 양방향
+    vertex[v1].append((v2, d))
+    vertex[v2].append((v1, d))
+
+for _ in range(m):
+    a, b = map(int, input().split())  # a <-> b: 거리를 구하자
+    visited = [True] * (n + 1)
+    visited[a] = False  # 방문 표시
+    dist = 0
+    dfs(a, b, 0)
+
+    print(dist)
