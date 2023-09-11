@@ -75,4 +75,4 @@ for i in range(n):
 y0, x0, y1, x1 = *coins[0], *coins[1]
 res = bfs(y0, x0, y1, x1)
 
-print(res if res <= 10 else -1)
+print(res)
