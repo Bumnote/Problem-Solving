@@ -1,41 +1,43 @@
 from sys import stdin, maxsize
+from heapq import heappush, heappop
 
+INF = maxsize
 input = stdin.readline
 
 
-def dfs(y, x, n_list):
-    global MAX, MIN
+# 다익스트라 알고리즘 구현
+def dijkstra(s):
+    dist = [INF] * (n + 1)
+    dist[s] = 0
+    pq = [(0, s)]
 
-    if y == n - 1 and x == n - 1:
-        temp = n_list[::]  # n_list를 보존하기 위해서 temp변수에 deepcopy
-        for i in range(0, len(temp) - 1, 2):
-            res = eval("".join(temp[i:i + 3]))
-            temp[i + 2] = str(res)
-
-        MAX = max(MAX, int(res))  # 최댓값 갱신
-        MIN = min(MIN, int(res))  # 최솟값 갱신
-        return
-
-    for dy, dx in ((1, 0), (0, 1)):
-        ny, nx = y + dy, x + dx
-        # 범위를 넘은 경우 -> 고려하지 않는다.
-        if ny < 0 or ny >= n or nx < 0 or nx >= n:
+    while pq:
+        min_dist, cur_v = heappop(pq)
+        if min_dist != dist[cur_v]:
             continue
 
-        visited[ny][nx] = False  # 방문 처리
-        n_list.append(MAP[ny][nx])
-        dfs(ny, nx, n_list)
-        n_list.pop()
-        visited[ny][nx] = True  # 복원 처리
+        for nxt_v, nxt_dist in vertex[cur_v].items():
+            new_dist = dist[cur_v] + nxt_dist
+            if new_dist < dist[nxt_v]:
+                dist[nxt_v] = new_dist
+                heappush(pq, (new_dist, nxt_v))
+
+    # 왕복 거리를 출력
+    return max(dist[1:]) * 2
 
 
-n = int(input().strip())  # n: 지도의 크기
-MAP = [list(input().split()) for _ in range(n)]
+# n: 농장의 개수, m: 도로의 개수, x: 파티가 열리는 농장
+n, m, x = map(int, input().split())
+vertex = [{} for _ in range(n + 1)]
 
-visited = [[True] * n for _ in range(n)]
-visited[0][0] = False  # 방문 처리
-MAX, MIN = -maxsize, maxsize
+for _ in range(m):
+    ai, bi, ti = map(int, input().split())  # ai <-> bi:시간 ti 양방향
+    if bi not in vertex[ai]:
+        vertex[ai][bi] = ti
+        vertex[bi][ai] = ti
+    # 기존의 거리보다 짧은 시간이 걸린다면 -> 더 짧은 시간으로 갱신
+    else:
+        vertex[ai][bi] = min(vertex[ai][bi], ti)
+        vertex[bi][ai] = min(vertex[bi][ai], ti)
 
-dfs(0, 0, [MAP[0][0]])
-
-print(f"{MAX} {MIN}")
+print(dijkstra(x))
