@@ -1,43 +1,35 @@
-from sys import stdin, maxsize
-from heapq import heappush, heappop
+from sys import stdin
 
-INF = maxsize
 input = stdin.readline
 
 
-# 다익스트라 알고리즘 구현
-def dijkstra(s):
-    dist = [INF] * (n + 1)
-    dist[s] = 0
-    pq = [(0, s)]
+# 대표 노드를 반환해주는 함수
+def find(x):
+    if uf[x] == x:
+        return x
 
-    while pq:
-        min_dist, cur_v = heappop(pq)
-        if min_dist != dist[cur_v]:
-            continue
-
-        for nxt_v, nxt_dist in vertex[cur_v].items():
-            new_dist = dist[cur_v] + nxt_dist
-            if new_dist < dist[nxt_v]:
-                dist[nxt_v] = new_dist
-                heappush(pq, (new_dist, nxt_v))
-
-    # 왕복 거리를 출력
-    return max(dist[1:]) * 2
+    uf[x] = find(uf[x])
+    return uf[x]
 
 
-# n: 농장의 개수, m: 도로의 개수, x: 파티가 열리는 농장
-n, m, x = map(int, input().split())
-vertex = [{} for _ in range(n + 1)]
+# 두 노드를 연결시켜주는 함수
+def union(a, b):
+    a, b = find(a), find(b)
+    uf[a] = b
+
+
+n, m = map(int, input().split())  # n: 강의 수, m: 건물 쌍의 수
+uf = [i for i in range(n + 1)]
 
 for _ in range(m):
-    ai, bi, ti = map(int, input().split())  # ai <-> bi:시간 ti 양방향
-    if bi not in vertex[ai]:
-        vertex[ai][bi] = ti
-        vertex[bi][ai] = ti
-    # 기존의 거리보다 짧은 시간이 걸린다면 -> 더 짧은 시간으로 갱신
-    else:
-        vertex[ai][bi] = min(vertex[ai][bi], ti)
-        vertex[bi][ai] = min(vertex[bi][ai], ti)
+    i, j = map(int, input().split())  # i <-> j: i번 건물과 j번 건물을 연결
+    union(i, j)
 
-print(dijkstra(x))
+lectures = list(map(int, input().split()))
+
+cnt = 0
+for i in range(n - 1):
+    if find(lectures[i]) != find(lectures[i + 1]):
+        cnt += 1
+
+print(cnt)
