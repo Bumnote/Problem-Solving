@@ -230,3 +230,28 @@ def upper_bound(target):
 
     return min_idx
 ```
+
+- 유니온 파인드(Union-Find) O(log n)
+
+  - Union 연산: 특정 2개의 노드를 연결해 1개의 집합으로 묶는 연산
+   
+  - Find 연산: 자신이 속한 집합의 대표 노드를 찾아 반환하는 연산
+   
+  - 경로 압축: 여러 노드를 거쳐야 하는 경로에서 그래프를 변형해 더 짧은 경로로 갈 수 있도록 함으로써 시간 복잡도를 효과적으로 줄이는 방법
+   
+  - 용도: 여러 개의 노드 무리들이 있을 때, 특정한 2개의 노드를 선택하여 서로 연결되어있는지 확인할 때 
+```python
+# 대표 노드를 찾아 반환하는 함수 
+def find(x):
+    if uf[x] == x:
+        return x 
+    
+    uf[x] = find(uf[x])
+    return uf[x]
+
+
+# 두 노드를 연결해주는 함수 
+def union(a, b):
+    a, b = find(a), find(b)
+    uf[a] = b
+```
