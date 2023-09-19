@@ -1,53 +1,51 @@
 from sys import stdin
+from collections import deque
 
 input = stdin.readline
 
 
-def find(x):
-    if uf[x] == x:
-        return x
-    uf[x] = find(uf[x])
-    return uf[x]
+def bfs(a, b):
+    visited = [True] * (n + 1)
+    visited[a] = False  # 시작점 방문 처리
+    dq = deque()
+    dq.append((a, 0))
+
+    while dq:
+        cur_v, cur_cnt = dq.popleft()
+        if cur_v == b:
+            return cur_cnt
+
+        i = 1
+        # 양의 방향
+        while True:
+            nxt_v = cur_v + n_list[cur_v] * i
+            i += 1
+            # 범위를 벗어난 경우 -> 탐색 중지
+            if nxt_v > n:
+                break
+            # 방문이 가능하다면 -> 탐색 요소로 추가
+            if visited[nxt_v]:
+                visited[nxt_v] = False  # 방문 처리
+                dq.append((nxt_v, cur_cnt + 1))
+
+        j = 1
+        # 음의 방향
+        while True:
+            nxt_v = cur_v - n_list[cur_v] * j
+            j += 1
+            # 범위를 벗어난 경우 -> 탐색 중지
+            if nxt_v < 1:
+                break
+            # 방문이 가능하다면 -> 탐색 요소로 추가
+            if visited[nxt_v]:
+                visited[nxt_v] = False
+                dq.append((nxt_v, cur_cnt + 1))
+
+    return -1
 
 
-def union(a, b):
-    a, b = find(a), find(b)
-    uf[a] = b
+n = int(input().strip())  # n: 징검다리의 개수
+n_list = [0] + list(map(int, input().split()))
+a, b = map(int, input().split())  # a -> b
 
-
-t = int(input().strip())  # t: 테스트 케이스
-
-for _ in range(t):
-    n = int(input().strip())  # n: 노드 수
-    m = int(input().strip())  # m: 간선 수
-
-    flag = True
-    if n - 1 < m:
-        flag = False  # 트리 -> 노드 수 - 1 = 간선 수
-
-    uf = [i for i in range(n + 1)]
-    for _ in range(m):
-        a, b = map(int, input().split())  # a <-> b: 연결
-        # 사이클이 발생한 경우 -> tree가 될 수 없다.
-        if find(a) == find(b):
-            flag = False
-        else:
-            union(a, b)
-
-    vertex = [[] for _ in range(n + 1)]
-    for j in range(1, n + 1):
-        vertex[find(j)].append(j)
-
-    group = 0
-    for k in range(1, n + 1):
-        # 요소가 존재한다면 -> group 개수 증가
-        if vertex[k]:
-            group += 1
-            # group 개수가 2개 이상이라면 -> graph
-            if group > 1:
-                flag = False
-
-    if flag:
-        print("tree")
-    else:
-        print("graph")
+print(bfs(a, b))
