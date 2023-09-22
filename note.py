@@ -1,51 +1,33 @@
 from sys import stdin
-from collections import deque
 
 input = stdin.readline
 
 
-def bfs(a, b):
-    visited = [True] * (n + 1)
-    visited[a] = False  # 시작점 방문 처리
-    dq = deque()
-    dq.append((a, 0))
-
-    while dq:
-        cur_v, cur_cnt = dq.popleft()
-        if cur_v == b:
-            return cur_cnt
-
-        i = 1
-        # 양의 방향
-        while True:
-            nxt_v = cur_v + n_list[cur_v] * i
-            i += 1
-            # 범위를 벗어난 경우 -> 탐색 중지
-            if nxt_v > n:
-                break
-            # 방문이 가능하다면 -> 탐색 요소로 추가
-            if visited[nxt_v]:
-                visited[nxt_v] = False  # 방문 처리
-                dq.append((nxt_v, cur_cnt + 1))
-
-        j = 1
-        # 음의 방향
-        while True:
-            nxt_v = cur_v - n_list[cur_v] * j
-            j += 1
-            # 범위를 벗어난 경우 -> 탐색 중지
-            if nxt_v < 1:
-                break
-            # 방문이 가능하다면 -> 탐색 요소로 추가
-            if visited[nxt_v]:
-                visited[nxt_v] = False
-                dq.append((nxt_v, cur_cnt + 1))
-
-    return -1
+def dfs(cur_v):
+    for nxt_v in vertex[cur_v]:
+        if visited[nxt_v]:
+            visited[nxt_v] = False  # 방문 처리
+            dfs(nxt_v)
 
 
-n = int(input().strip())  # n: 징검다리의 개수
-n_list = [0] + list(map(int, input().split()))
-a, b = map(int, input().split())  # a -> b
+n, m = map(int, input().split())
+vertex = [[] for _ in range(n + 1)]
 
-print(bfs(a, b))
+for _ in range(m):
+    c1, c2 = map(int, input().split())
+    vertex[c1].append(c2)
+    vertex[c2].append(c1)
+
+visited = [True] * (n + 1)
+visited[1] = False  # 방문 처리
+dfs(1)
+
+flag = True
+for i in range(1, n + 1):
+    if visited[i]:
+        flag = False
+        print(i)
+
+# 모든 노드가 1번 소에 연결되어 있는 경우
+if flag:
+    print(0)
