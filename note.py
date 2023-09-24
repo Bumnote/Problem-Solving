@@ -2,32 +2,24 @@ from sys import stdin
 
 input = stdin.readline
 
+LEN = 1040
+sieve = [False, True] + [True] * (LEN - 1)
+for i in range(2, LEN + 1):
+    # 소수에 해당한다면
+    if sieve[i]:
+        for j in range(2 * i, LEN + 1, i):
+            sieve[j] = False  # 소수가 아님을 처리
 
-def dfs(cur_v):
-    for nxt_v in vertex[cur_v]:
-        if visited[nxt_v]:
-            visited[nxt_v] = False  # 방문 처리
-            dfs(nxt_v)
+s = input().strip()
 
+total = 0
+for elem in s:
+    if "A" <= elem <= "Z":
+        total += (ord(elem) - 38)
+    else:
+        total += (ord(elem) - 96)
 
-n, m = map(int, input().split())
-vertex = [[] for _ in range(n + 1)]
-
-for _ in range(m):
-    c1, c2 = map(int, input().split())
-    vertex[c1].append(c2)
-    vertex[c2].append(c1)
-
-visited = [True] * (n + 1)
-visited[1] = False  # 방문 처리
-dfs(1)
-
-flag = True
-for i in range(1, n + 1):
-    if visited[i]:
-        flag = False
-        print(i)
-
-# 모든 노드가 1번 소에 연결되어 있는 경우
-if flag:
-    print(0)
+if sieve[total]:
+    print("It is a prime word.")
+else:
+    print("It is not a prime word.")
