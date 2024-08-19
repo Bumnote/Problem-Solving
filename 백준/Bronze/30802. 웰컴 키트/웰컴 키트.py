@@ -18,7 +18,6 @@ for size in sizes:
             SUM += (size // t)
         # 묶음으로 묶이면서 낱개가 생기는 경우 
         else:
-
             SUM += ((size // t) + 1)
 
 print(f"{SUM}")
