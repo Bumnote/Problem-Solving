@@ -28,10 +28,10 @@ for _ in range(t):
     s, target = input().split()
     canVisit = [True for _ in range(MAX)]
     canVisit[int(s)] = False  # 방문 처리
-    dq = deque([(s, 0, "")])
+    dq = deque([(s, "")])
 
     while dq:
-        cur_s, cnt, c = dq.popleft()
+        cur_s, c = dq.popleft()
         if cur_s == target:
             print(c)
             break
@@ -48,4 +48,4 @@ for _ in range(t):
 
             if 0 <= nxt_s < MAX and canVisit[nxt_s]:
                 canVisit[nxt_s] = False  # 방문 처리
-                dq.append((str(nxt_s), cnt + 1, c + func))
+                dq.append((str(nxt_s), c + func))
