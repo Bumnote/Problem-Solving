@@ -1,5 +1,5 @@
 from sys import stdin
-from heapq import heappush, heappop
+from collections import deque
 
 input = stdin.readline
 
@@ -8,36 +8,37 @@ def in_range(y, x):
     return 0 <= y < n and 0 <= x < m
 
 
-def dijkstra():
-    INF = float('inf')
-    dist = [[INF for _ in range(m)] for _ in range(n)]
-    dist[0][0] = 1
+def bfs(y, x):
+    dq = deque([(y, x, 1, 0)])
+    visited = [[[False, False] for _ in range(m)] for _ in range(n)]
+    visited[y][x][0] = True  # 출발 지점 방문 처리
 
-    pq = [(0, 1, 0, 0)]
     dys, dxs = [-1, 1, 0, 0], [0, 0, -1, 1]
-    while pq:
-        block, min_dist, cur_y, cur_x = heappop(pq)
+    while dq:
+        cur_y, cur_x, cnt, block = dq.popleft()
 
-        if min_dist != dist[cur_y][cur_x]:
-            continue
+        if cur_y == n - 1 and cur_x == m - 1:
+            return cnt
 
         for dy, dx in zip(dys, dxs):
             nxt_y, nxt_x = cur_y + dy, cur_x + dx
-            if in_range(nxt_y, nxt_x):
-                if MAP[nxt_y][nxt_x] == 0:
-                    if min_dist + 1 < dist[nxt_y][nxt_x]:
-                        dist[nxt_y][nxt_x] = min_dist + 1
-                        heappush(pq, (block, min_dist + 1, nxt_y, nxt_x))
-                else:
-                    if block == 0 and min_dist + 1 < dist[nxt_y][nxt_x]:
-                        dist[nxt_y][nxt_x] = min_dist + 1
-                        heappush(pq, (block + 1, min_dist + 1, nxt_y, nxt_x))
 
-    return dist[n - 1][m - 1] if dist[n - 1][m - 1] != INF else -1
+            # 다음 좌표가 범위를 넘지 않은 경우
+            if in_range(nxt_y, nxt_x):
+                # 다음 위치로 이동이 가능하고, 방문한 적이 없는 경우
+                if MAP[nxt_y][nxt_x] == 0 and not visited[nxt_y][nxt_x][block]:
+                    visited[nxt_y][nxt_x][block] = True  # 방문 처리
+                    dq.append((nxt_y, nxt_x, cnt + 1, block))
+
+                # 다음 위치가 벽이고, 부술 수 있는 경우
+                elif MAP[nxt_y][nxt_x] == 1 and block == 0:
+                    visited[nxt_y][nxt_x][block + 1] = True
+                    dq.append((nxt_y, nxt_x, cnt + 1, block + 1))
+
+    return -1
 
 
 n, m = map(int, input().split())
-
-# (1, 1) -> (n, m) / 0: 이동 가능, 1: 벽
 MAP = [list(map(int, input().rstrip())) for _ in range(n)]
-print(dijkstra())
+
+print(bfs(0, 0))
