@@ -30,7 +30,7 @@ def bfs(y, x):
                 # 다른 육지와 맞닿아 있는 경우
                 else:
                     MIN = min(MIN, cnt)  # 최단 거리 갱신
-
+                    return 
 
 n = int(input().rstrip())
 # 0: 바다 / 1: 육지
