@@ -46,8 +46,10 @@ public class Main {
 
             lst.sort(Comparator.naturalOrder());
             for (int key : lst)
-                System.out.printf("%d ", key);
-            System.out.println();
+                sb.append(key).append(" ");
+
+            sb.append('\n');
         }
+        System.out.println(sb.toString());
     }
 }
