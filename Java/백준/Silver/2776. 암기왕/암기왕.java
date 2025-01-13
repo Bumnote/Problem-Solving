@@ -6,10 +6,8 @@ public class Main {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     static StringBuilder sb = new StringBuilder();
     static StringTokenizer st;
-
     static int T, N, M;
     static Set<Integer> s;
-
 
     public static void main(String[] args) throws IOException {
 
@@ -26,8 +24,10 @@ public class Main {
             st = new StringTokenizer(br.readLine());
             for (int i = 0; i < M; i++) {
                 int num = Integer.parseInt(st.nextToken());
-                if (s.contains(num)) sb.append("1").append('\n');
-                else sb.append("0").append('\n');
+                if (s.contains(num))
+                    sb.append("1").append('\n');
+                else
+                    sb.append("0").append('\n');
             }
         }
 
