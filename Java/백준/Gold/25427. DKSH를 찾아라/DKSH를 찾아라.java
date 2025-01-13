@@ -3,14 +3,15 @@ import java.io.*;
 
 public class Main {
 
-    static Scanner sc = new Scanner(System.in);
-    static int N, d = 0, dk = 0, dks = 0, dksh = 0;
+    static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    static int N;
+    static long d = 0, dk = 0, dks = 0, dksh = 0;
     static char[] arr;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
-        N = sc.nextInt();
-        arr = sc.next().toCharArray();
+        N = Integer.parseInt(br.readLine());
+        arr = br.readLine().toCharArray();
 
         for (char c : arr) {
             if (c == 'D') d++;
