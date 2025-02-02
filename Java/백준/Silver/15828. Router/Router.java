@@ -17,15 +17,19 @@ public class Main {
 
             packet = Integer.parseInt(br.readLine());
             if (packet == -1) {
-                for (Integer p : dq)
-                    bw.write(p + " ");
+                if (!dq.isEmpty()) {
+                    for (Integer p : dq)
+                        bw.write(p + " ");
+                } else bw.write("empty");
                 break;
             }
             if (packet == 0) {
                 dq.poll();
                 continue;
             }
-            dq.offer(packet);
+
+            if (dq.size() < N)
+                dq.offer(packet);
         }
 
         br.close();
