@@ -1,39 +1,47 @@
-import java.util.*;
 import java.io.*;
+import java.util.*;
 
 public class Main {
 
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-    static BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
-    static boolean[] sieve;
-    static final int LEN = 123_456 * 2;
+    static StringBuilder sb = new StringBuilder();
+    static int N, cnt;
+    static final int MAX = 250_000;
+    static boolean[] sieve = new boolean[MAX + 1];
 
     public static void main(String[] args) throws IOException {
 
-        int n, cnt;
-
-        sieve = new boolean[LEN + 1];
-        sieve[0] = true;
-        sieve[1] = true;
-
-        for (int i = 2; i <= (int) Math.sqrt(LEN); i++)
-            if (!sieve[i])
-                for (int j = i * i; j <= LEN; j += i)
-                    sieve[j] = true;
+        setUp();
 
         while (true) {
-
-            n = Integer.parseInt(br.readLine());
-            if (n == 0)
+            N = Integer.parseInt(br.readLine());
+            if (N == 0)
                 break;
 
             cnt = 0;
-            for (int i = n + 1; i <= 2 * n; i++)
+            for (int i = N + 1; i <= 2 * N; i++) {
                 if (!sieve[i])
                     cnt++;
+            }
 
-            bw.write(cnt + "\n");
+            sb.append(cnt).append("\n");
         }
-        bw.close();
+
+        System.out.println(sb.toString());
+    }
+
+    // 에라토스테네스의 체 구현
+    static void setUp() {
+
+        sieve[0] = true;
+        sieve[1] = true;
+        for (int i = 2; i <= Math.sqrt(MAX); i++) {
+            if (!sieve[i]) {
+                for (int j = i * i; j <= MAX; j += i) {
+                    sieve[j] = true; // 합성수 처리
+                }
+            }
+        }
+
     }
 }
