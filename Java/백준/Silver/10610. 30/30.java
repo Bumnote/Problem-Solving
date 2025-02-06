@@ -3,7 +3,7 @@ import java.util.*;
 
 public class Main {
 
-    static Scanner sc = new Scanner(System.in);
+    static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     static StringBuilder sb = new StringBuilder();
     static String N;
     static int SUM;
@@ -11,7 +11,7 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
 
-        N = sc.nextLine();
+        N = br.readLine();
         SUM = 0;
 
         for (int i = 0; i < N.length(); i++)
