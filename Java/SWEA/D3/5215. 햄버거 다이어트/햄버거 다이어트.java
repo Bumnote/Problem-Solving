@@ -9,7 +9,7 @@ class Solution {
 
   static int T, N, L;
   static int[] score, kcal;
-  static int[][] dp;
+  static int[] dp;
 
   public static void main(String[] args) throws IOException {
 
@@ -39,20 +39,19 @@ class Solution {
     }
 
     // dp 초기화
-    dp = new int[N + 1][L + 1];
+    dp = new int[L + 1];
   }
 
   private static void solve(int tc) {
 
     for (int i = 1; i <= N; i++) {
-      for (int j = 1; j <= L; j++) {
-        dp[i][j] = dp[i - 1][j];
-        if (j - kcal[i] >= 0) {
-          dp[i][j] = Math.max(dp[i][j], score[i] + dp[i - 1][j - kcal[i]]);
+      for (int j = L; j >= 0; j--) {
+        if (j >= kcal[i]) {
+          dp[j] = Math.max(dp[j], dp[j - kcal[i]] + score[i]);
         }
       }
     }
 
-    sb.append("#").append(tc).append(" ").append(dp[N][L]).append("\n");
+    sb.append("#").append(tc).append(" ").append(dp[L]).append("\n");
   }
 }
