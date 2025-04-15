@@ -21,13 +21,14 @@ public class Main {
 
   private static void solve() {
 
+    StringBuilder sb = new StringBuilder();
+
     int[] table = makeTable();
 
     int textSize = text.length();
     int patternSize = pattern.length();
     int idx = 0;
     int cnt = 0;
-    ArrayList<Integer> ans = new ArrayList<>();
 
     for (int i = 0; i < textSize; i++) {
       while (idx > 0 && text.charAt(i) != pattern.charAt(idx)) {
@@ -37,7 +38,7 @@ public class Main {
       if (text.charAt(i) == pattern.charAt(idx)) {
         if (idx == patternSize - 1) {
           cnt++;
-          ans.add(i - idx + 1);
+          sb.append(i - idx + 1).append("\n");
           idx = table[idx];
         } else {
           idx++;
@@ -46,9 +47,7 @@ public class Main {
     }
 
     System.out.println(cnt);
-    for (Integer i : ans) {
-      System.out.println(i);
-    }
+    System.out.print(sb);
   }
 
   private static int[] makeTable() {
@@ -70,7 +69,6 @@ public class Main {
 
     return table;
   }
-
 }
 
 /*
