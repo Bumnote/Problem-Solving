@@ -1,82 +1,82 @@
 import java.io.*;
 import java.util.*;
 
-class Main {
+public class Main {
 
-	static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-	static StringTokenizer st;
-	static int N, M, LEN, MIN = Integer.MAX_VALUE;
-	static Set<Integer> excludeNumber = new HashSet<>();
-	static ArrayList<Integer> lst = new ArrayList<>();
-	static String str = "";
-	static boolean[] canUseNumber = new boolean[10];
-	static boolean[] visited = new boolean[10];
-	static int closeNumber = 1_000_000;
+  static final int MAX = 500_000;
 
-	// 백트래킹으로 고장난 버튼을 제외한 숫자들 중에서 해당 버튼에서 가장 가까운 숫자를 찾고,
-	// 그 버튼의 숫자 개수와 100번 과의 차이 , 해당 숫자와의 차이를 더하면 답이다.
-	public static void main(String args[]) throws Exception {
-		N = Integer.parseInt(br.readLine());
-		M = Integer.parseInt(br.readLine());
-		LEN = getLength(N);
+  static String N;
+  static int M, LEN, MIN = 987_654_321, closeNumber = 987_654_321;
+  static Set<Integer> regard;
 
-		if (M > 0) {
-			st = new StringTokenizer(br.readLine());
-			for (int i = 0; i < M; i++)
-				excludeNumber.add(Integer.parseInt(st.nextToken()));
+  public static void main(String[] args) throws IOException {
+    init();
+    solve();
+  }
 
-			for (int i = 0; i < 10; i++)
-				if (excludeNumber.contains(i))
-					visited[i] = true;
-		}
+  private static void init() throws IOException {
 
-		bt(lst, str);
-		int useBtDiff = getLength(closeNumber) + Math.abs(closeNumber - N);
-		int notUseBtDiff = Math.abs(100 - N);
+    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    StringTokenizer st;
 
-		System.out.println(Math.min(useBtDiff, notUseBtDiff));
-	}
+    // 입력 부분 
+    N = br.readLine();
+    LEN = N.length(); // 채널의 길이
+    M = Integer.parseInt(br.readLine()); // M: 고장난 버튼의 개수
 
-	private static void bt(ArrayList<Integer> lst, String currNum) {
+    regard = new HashSet<>(); // 무시해야 할 버튼 추가
+    // 무시해야 할 버튼이 있는 경우에만 -> 입력을 받는다.
+    if (M > 0) {
+      st = new StringTokenizer(br.readLine());
+      for (int i = 0; i < M; i++) {
+        regard.add(Integer.parseInt(st.nextToken()));
+      }
+    }
+    br.close();
+  }
 
-		if (lst.size() > 6)
-			return;
+  private static void solve() {
 
-		if (!currNum.isEmpty()) {
-			int diff = Math.abs(Integer.parseInt(currNum) - N);
-			// 차이가 더 적은 수가 나오는 경우 -> 갱신
-			if (MIN > diff) {
-				MIN = diff; // 차이 최솟값 갱신
-				closeNumber = Integer.parseInt(currNum); // 가능한 가장 가까운 숫자 갱신
-			}
-			// 차이가 같은 경우 -> 자릿수가 더 짧은 수로 갱신
-			else if (MIN == diff) {
-				int closeNumberLength = getLength(closeNumber);
-				int currNumLength = getLength(Integer.parseInt(currNum));
+    getCloseNumber("");
+    int click = Math.abs(Integer.parseInt(N) - 100); // ++ 또는 -- 클릭으로만 가는 방법 수
+    int remote = String.valueOf(closeNumber).length() +
+                 Math.abs(closeNumber - Integer.parseInt(N)); // 숫자를 눌러야 하는 방법 수
 
-				if (closeNumberLength > currNumLength)
-					closeNumber = Integer.parseInt(currNum);
-			}
-		}
-		for (int i = 0; i < 10; i++) {
-			if (!visited[i]) {
-				lst.add(i);
-				str = str.concat(String.valueOf(i));
-				bt(lst, str);
-				str = str.substring(0, str.length() - 1);
-				lst.remove(lst.size() - 1);
-			}
-		}
+    System.out.print(Math.min(click, remote));
+  }
 
-	}
+  private static void getCloseNumber(String str) {
 
-	private static int getLength(int num) {
-		int length = num == 0 ? 1 : 0;
-		while (num > 0) {
-			num /= 10;
-			length++;
-		}
+    if (str.length() > 6) {
+      return;
+    }
 
-		return length;
-	}
+    if (!str.isEmpty()) {
+      int diff = Math.abs(Integer.parseInt(str) - Integer.parseInt(N));
+      // 차이가 더 적은 수가 나오는 경우 -> 갱신
+      if (MIN > diff) {
+        MIN = diff; // 차이 최솟값 갱신
+        closeNumber = Integer.parseInt(str); // 가능한 가장 가까운 숫자 갱신
+      }
+      // 차이가 같은 경우 -> 자릿수가 더 짧은 수로 갱신
+      else if (MIN == diff) {
+        int closeNumberLength = String.valueOf(closeNumber).length();
+        int currNumLength = str.length();
+
+        if (closeNumberLength > currNumLength) {
+          closeNumber = Integer.parseInt(str);
+        }
+      }
+    }
+
+    for (int i = 0; i < 10; i++) {
+      // 이미 방문한 경우 -> 탐색하지 않는다.
+      if (regard.contains(i)) {
+        continue;
+      }
+      str = str.concat(String.valueOf(i));
+      getCloseNumber(str);
+      str = str.substring(0, str.length() - 1);
+    }
+  }
 }
