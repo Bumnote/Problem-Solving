@@ -3,28 +3,11 @@ import java.util.*;
 
 public class Main {
 
-  static class Edge implements Comparable<Edge> {
-
-    int v1, v2, cost;
-
-    Edge(int v1, int v2, int cost) {
-      this.v1 = v1;
-      this.v2 = v2;
-      this.cost = cost;
-    }
-
-    @Override
-    public int compareTo(Edge o) {
-      return this.cost - o.cost;
-    }
-  }
-
   static final int INF = 987_654_321;
   static int N;
   static int[][] map;
   static int[][] dist;
   static boolean[][] visited;
-  static PriorityQueue<Edge> pq;
 
   public static void main(String[] args) throws IOException {
     init();
@@ -42,16 +25,11 @@ public class Main {
     dist = new int[N][N];
     visited = new boolean[N][N];
 
-    pq = new PriorityQueue<>();
     for (int i = 0; i < N; i++) {
       st = new StringTokenizer(br.readLine());
       for (int j = 0; j < N; j++) {
         map[i][j] = Integer.parseInt(st.nextToken());
         dist[i][j] = map[i][j];
-        // 중복을 제거하여 대각선을 기준으로 오른쪽 정보만 담는다.
-        if (i < j) {
-          pq.add(new Edge(i, j, map[i][j]));
-        }
       }
     }
 
