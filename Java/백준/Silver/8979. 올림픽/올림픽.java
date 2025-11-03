@@ -74,7 +74,7 @@ class Main {
     int answer = 0;
     int count = 0;
     Country prev = null;
-    for (int i = 1; i <= k; i++) {
+    for (int i = 1; i <= n; i++) {
       Country curr = pq.poll();
       count++;
       // 초기 설정
@@ -103,4 +103,5 @@ class Main {
 
     System.out.print(answer);
   }
+
 }
