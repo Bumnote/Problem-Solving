@@ -11,7 +11,6 @@ class Main {
   private static StringTokenizer st;
 
   private static int n, k;
-  private static long count;
   private static int[] arr;
   private static int[] prefixSum;
 
@@ -30,16 +29,22 @@ class Main {
     for (int i = 0; i < n; i++) {
       arr[i] = Integer.parseInt(st.nextToken());
     }
-    initPrefixSum();
     br.close();
+
+    prefixSum = new int[n];
+    prefixSum[0] = arr[0];
+    for (int i = 1; i < n; i++) {
+      prefixSum[i] = prefixSum[i - 1] + arr[i];
+    }
   }
 
   private static void solve() {
+
     Map<Integer, Long> map = new HashMap<>();
 
-    count = 0L;
+    long count = 0;
     for (int i = 0; i < n; i++) {
-      int target = prefixSum[i] - k; // prefixSum[i] = prefixSum[j] + k 인 j 찾기
+      int target = prefixSum[i] - k;
 
       if (target == 0) {
         count++;
@@ -53,13 +58,5 @@ class Main {
     }
 
     System.out.print(count);
-  }
-
-  private static void initPrefixSum() {
-    prefixSum = new int[n];
-    prefixSum[0] = arr[0];
-    for (int i = 1; i < n; i++) {
-      prefixSum[i] = prefixSum[i - 1] + arr[i];
-    }
   }
 }
