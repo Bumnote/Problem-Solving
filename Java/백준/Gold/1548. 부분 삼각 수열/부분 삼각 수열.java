@@ -30,26 +30,22 @@ class Main {
 
   private static void solve() {
 
-    Arrays.sort(A); // 오름차순 정렬
+    Arrays.sort(A);
+    int maxLength = n <= 2 ? 1 : 2;
 
-    int sequenceLength = 1;
     for (int left = 0; left < n - 1; left++) {
-      for (int right = n - 1; right >= left + 1; right--) {
+      for (int right = n - 1; left + 1 <= right; right--) {
         if (isTriRelation(A[left], A[left + 1], A[right])) {
-          sequenceLength = Math.max(sequenceLength, right - left + 1);
+          maxLength = Math.max(maxLength, right - left + 1);
           break;
         }
       }
     }
 
-    if (sequenceLength == 1 && n >= 3) {
-      sequenceLength = 2;
-    }
-
-    System.out.print(sequenceLength);
+    System.out.print(maxLength);
   }
 
   private static boolean isTriRelation(int x, int y, int z) {
-    return (x + y > z) && (x + z > y) && (y + z > x);
+    return (x + y > z) && (y + z > x) && (z + x > y);
   }
 }
