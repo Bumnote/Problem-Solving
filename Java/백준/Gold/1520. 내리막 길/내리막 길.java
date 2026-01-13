@@ -5,17 +5,6 @@ import java.util.StringTokenizer;
 
 class Main {
 
-  static class Node {
-
-    int nxt;
-    int dist;
-
-    Node(int nxt, int dist) {
-      this.nxt = nxt;
-      this.dist = dist;
-    }
-  }
-
   private static final BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
   private static final StringBuilder sb = new StringBuilder();
   private static StringTokenizer st;
