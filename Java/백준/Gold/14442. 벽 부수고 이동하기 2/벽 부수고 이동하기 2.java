@@ -65,7 +65,7 @@ class Main {
             dq.offer(new int[]{ny, nx, dist + 1, destroyedWallCount});
           }
           // 벽이면서, 벽을 더 부술 수 있는 경우 -> 벽을 부수고 이동
-          else if (destroyedWallCount < k) {
+          else if (destroyedWallCount < k && !visited[ny][nx][destroyedWallCount + 1]) {
             visited[ny][nx][destroyedWallCount + 1] = true;
             dq.offer(new int[]{ny, nx, dist + 1, destroyedWallCount + 1});
           }
