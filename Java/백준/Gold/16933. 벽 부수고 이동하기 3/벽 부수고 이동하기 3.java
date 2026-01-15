@@ -1,10 +1,24 @@
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.StringTokenizer;
+import java.io.*;
+import java.util.*;
 
 class Main {
+
+  static class Node {
+
+    int y;
+    int x;
+    int dist;
+    int destroyedWallCount;
+    int flag;
+
+    public Node(int y, int x, int dist, int destroyedWallCount, int flag) {
+      this.y = y;
+      this.x = x;
+      this.dist = dist;
+      this.destroyedWallCount = destroyedWallCount;
+      this.flag = flag;
+    }
+  }
 
   private static final BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
   private static final StringBuilder sb = new StringBuilder();
@@ -41,45 +55,43 @@ class Main {
     boolean[][][][] visited = new boolean[n][m][k + 1][2];
     visited[0][0][0][0] = true; // 처음 시작점 방문 처리
 
-    Deque<int[]> dq = new ArrayDeque<>();
-    dq.offer(new int[]{0, 0, 1, 0, 0}); // [4] -> 0: 낮, 1: 밤
+    Deque<Node> dq = new ArrayDeque<>();
+    dq.offer(new Node(0, 0, 1, 0, 0));
 
     while (!dq.isEmpty()) {
-      int[] curr = dq.poll();
-      int dist = curr[2];
-      int destroyedWallCount = curr[3];
-      int flag = curr[4];
+      Node curr = dq.poll();
 
-      if (discover(curr, dist)) {
+      if (curr.y == n - 1 && curr.x == m - 1) {
+        System.out.print(curr.dist);
         return;
       }
 
       for (int d = 0; d < 4; d++) {
-        int ny = curr[0] + dys[d];
-        int nx = curr[1] + dxs[d];
+        int ny = curr.y + dys[d];
+        int nx = curr.x + dxs[d];
 
         if (ny < 0 || ny >= n || nx < 0 || nx >= m) {
           continue;
         }
 
         // 범위를 넘지 않고, 다음 위치, 벽을 부순 개수, 낮/밤 상태가 방문하지 않은 상태라면 -> 탐색
-        if (!visited[ny][nx][destroyedWallCount][flag]) {
+        if (!visited[ny][nx][curr.destroyedWallCount][curr.flag]) {
           // 다음 위치가 빈 칸이라면 -> 이동
           if (map[ny][nx] == 0) {
-            visited[ny][nx][destroyedWallCount][flag] = true; // 방문 처리
-            dq.offer(new int[]{ny, nx, dist + 1, destroyedWallCount, 1 - flag});
+            visited[ny][nx][curr.destroyedWallCount][curr.flag] = true;
+            dq.offer(new Node(ny, nx, curr.dist + 1, curr.destroyedWallCount, 1 - curr.flag));
           }
           // 다음 위치가 벽이라면 -> 벽을 부순 개수 판단
-          else if (destroyedWallCount < k && !visited[ny][nx][destroyedWallCount + 1][1 - flag]) {
+          else if (curr.destroyedWallCount < k && !visited[ny][nx][curr.destroyedWallCount + 1][1 - curr.flag]) {
             // 낮인 경우 -> 벽을 부수고 이동
-            if (flag == 0) {
-              visited[ny][nx][destroyedWallCount + 1][1 - flag] = true; // 방문 처리
-              dq.offer(new int[]{ny, nx, dist + 1, destroyedWallCount + 1, 1 - flag});
+            if (curr.flag == 0) {
+              visited[ny][nx][curr.destroyedWallCount + 1][1 - curr.flag] = true;
+              dq.offer(new Node(ny, nx, curr.dist + 1, curr.destroyedWallCount + 1, 1 - curr.flag));
             }
             // 밤인 경우 -> 벽을 부술 수 없으므로, 원래 자리 유지
             else {
-              visited[curr[0]][curr[1]][destroyedWallCount][1 - flag] = true; // 방문 처리
-              dq.offer(new int[]{curr[0], curr[1], dist + 1, destroyedWallCount, 1 - flag});
+              visited[curr.y][curr.x][curr.destroyedWallCount][1 - curr.flag] = true;
+              dq.offer(new Node(curr.y, curr.x, curr.dist + 1, curr.destroyedWallCount, 1 - curr.flag));
             }
           }
         }
@@ -87,13 +99,5 @@ class Main {
     }
 
     System.out.print(-1);
-  }
-
-  private static boolean discover(int[] curr, int dist) {
-    if (curr[0] == n - 1 && curr[1] == m - 1) {
-      System.out.print(dist);
-      return true;
-    }
-    return false;
   }
 }
