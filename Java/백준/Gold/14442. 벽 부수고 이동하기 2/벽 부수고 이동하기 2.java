@@ -1,84 +1,82 @@
-import java.util.*;
-import java.io.*;
-
-class Node {
-	int y;
-	int x;
-	int dist;
-	int kCnt;
-
-	public Node(int y, int x, int dist, int kCnt) {
-		this.y = y;
-		this.x = x;
-		this.dist = dist;
-		this.kCnt = kCnt;
-	}
-}
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.StringTokenizer;
 
 class Main {
-	static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-	static StringTokenizer st;
-	static int N, M, K;
-	static int[][] MAP;
-	static boolean[][][] visited;
-	static int[] dys = { -1, 1, 0, 0 };
-	static int[] dxs = { 0, 0, -1, 1 };
 
-	public static void main(String args[]) throws Exception {
+  private static final BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+  private static final StringBuilder sb = new StringBuilder();
+  private static StringTokenizer st;
 
-		st = new StringTokenizer(br.readLine());
-		N = Integer.parseInt(st.nextToken());
-		M = Integer.parseInt(st.nextToken());
-		K = Integer.parseInt(st.nextToken());
+  private static int n, m, k;
+  private static int[][] map;
+  private static final int[] dys = {-1, 1, 0, 0}, dxs = {0, 0, -1, 1};
 
-		MAP = new int[N][M];
+  public static void main(String[] args) throws Exception {
+    init();
+    solve();
+  }
 
-		for (int i = 0; i < N; i++) {
-			String line = br.readLine();
-			for (int j = 0; j < M; j++) {
-				MAP[i][j] = line.charAt(j);
-			}
-		}
-		System.out.println(bfs());
-	}
+  private static void init() throws Exception {
 
-	private static int bfs() {
-		visited = new boolean[N][M][K + 1];
-		ArrayDeque<Node> dq = new ArrayDeque<>();
-		dq.add(new Node(0, 0, 1, 0));
-		visited[0][0][0] = true; // 시작점 방문 처리
+    st = new StringTokenizer(br.readLine());
+    n = Integer.parseInt(st.nextToken());
+    m = Integer.parseInt(st.nextToken());
+    k = Integer.parseInt(st.nextToken());
 
-		while (!dq.isEmpty()) {
-			Node curNode = dq.poll();
+    map = new int[n][m];
+    for (int i = 0; i < n; i++) {
+      String line = br.readLine();
+      for (int j = 0; j < m; j++) {
+        map[i][j] = line.charAt(j);
+      }
+    }
+    br.close();
+  }
 
-			if (curNode.y == N - 1 && curNode.x == M - 1)
-				return curNode.dist;
+  private static void solve() {
+    // (1, 1) -> (n, m)
+    boolean[][][] visited = new boolean[n][m][k + 1];
+    visited[0][0][0] = true; // 처음 시작점 방문 처리
 
-			for (int i = 0; i < 4; i++) {
-				int nxtY = curNode.y + dys[i];
-				int nxtX = curNode.x + dxs[i];
+    Deque<int[]> dq = new ArrayDeque<>();
+    dq.offer(new int[]{0, 0, 1, 0});
 
-				// 범위를 넘지 않고, 방문한 적이 없는 경우 -> 탐색
-				if (inRange(nxtY, nxtX) && !visited[nxtY][nxtX][curNode.kCnt]) {
-					// 빈 칸인 경우
-					if (MAP[nxtY][nxtX] == '0') {
-						dq.add(new Node(nxtY, nxtX, curNode.dist + 1, curNode.kCnt));
-						visited[nxtY][nxtX][curNode.kCnt] = true; // 방문 처리
-					}
-					// 벽인 경우
-					else if (curNode.kCnt < K) {
-						dq.add(new Node(nxtY, nxtX, curNode.dist + 1, curNode.kCnt + 1));
-						visited[nxtY][nxtX][curNode.kCnt + 1] = true;
-					}
-				}
-			}
+    while (!dq.isEmpty()) {
+      int[] curr = dq.poll();
+      int dist = curr[2];
+      int destroyedWallCount = curr[3];
 
-		}
-		// 방문이 불가능한 경우
-		return -1;
-	}
+      if (curr[0] == n - 1 && curr[1] == m - 1) {
+        System.out.print(dist);
+        return;
+      }
 
-	private static boolean inRange(int y, int x) {
-		return 0 <= y && y < N && 0 <= x && x < M;
-	}
+      for (int d = 0; d < 4; d++) {
+        int ny = curr[0] + dys[d];
+        int nx = curr[1] + dxs[d];
+        // 범위를 넘지 않으면서, 방문한 적이 없는 경우 -> 탐색
+        if (inRange(ny, nx) && !visited[ny][nx][destroyedWallCount]) {
+          // 벽이 아닌 경우 -> 그냥 이동
+          if (map[ny][nx] == '0') {
+            visited[ny][nx][destroyedWallCount] = true;
+            dq.offer(new int[]{ny, nx, dist + 1, destroyedWallCount});
+          }
+          // 벽이면서, 벽을 더 부술 수 있는 경우 -> 벽을 부수고 이동
+          else if (destroyedWallCount < k) {
+            visited[ny][nx][destroyedWallCount + 1] = true;
+            dq.offer(new int[]{ny, nx, dist + 1, destroyedWallCount + 1});
+          }
+        }
+      }
+    }
+
+    System.out.print(-1);
+  }
+
+  private static boolean inRange(int y, int x) {
+    return 0 <= y && y < n && 0 <= x && x < m;
+  }
 }
