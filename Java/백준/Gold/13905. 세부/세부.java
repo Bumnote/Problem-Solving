@@ -44,6 +44,7 @@ class Main {
   }
 
   public static void solve() {
+    // 출발지와 도착지가 존재 -> 다익스트라 또는 Prim
     // 최솟값들 중에서 최댓값을 구해야 한다.
     prim();
 
@@ -62,6 +63,10 @@ class Main {
       int[] curr = pq.poll();
       int curNode = curr[0];
       int curLimit = curr[1];
+
+      if (curNode == e) {
+        break;
+      }
 
       if (visited[curNode]) {
         continue;
