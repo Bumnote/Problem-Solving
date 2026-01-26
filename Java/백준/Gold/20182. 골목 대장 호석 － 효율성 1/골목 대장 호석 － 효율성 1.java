@@ -43,23 +43,38 @@ class Main {
   }
 
   public static void solve() {
-    System.out.print(dijkstra());
+    long left = 1;
+    long right = c;
+    long answer = -1;
+    while (left <= right) {
+      long mid = (left + right) / 2;
+      boolean result = dijkstra(mid);
+      
+      // 해당 금액으로 갈 수 있다면 더 적은 금액으로 검사
+      if (result) {
+        right = mid - 1;
+        answer = mid; // 해당 금액으로는 가능하므로 정답 후보 저장
+      } else {
+        left = mid + 1;
+      }
+    }
+
+    System.out.print(answer);
   }
 
-  private static long dijkstra() {
+  private static boolean dijkstra(long limit) {
 
     long[] dist = new long[n + 1];
     Arrays.fill(dist, INF);
     dist[a] = 0;
 
     PriorityQueue<long[]> pq = new PriorityQueue<>((o1, o2) -> Long.compare(o1[1], o2[1]));
-    pq.offer(new long[]{a, 0, 0});
+    pq.offer(new long[]{a, 0});
 
     while (!pq.isEmpty()) {
       long[] curr = pq.poll();
       int currNode = (int) curr[0];
       long currCost = curr[1];
-      long currShy = curr[2];
 
       if (dist[currNode] < currCost) {
         continue;
@@ -70,14 +85,13 @@ class Main {
         long nxtCost = nxt[1];
         long newCost = currCost + nxtCost;
 
-        // 새로운 비용이 더 작고, 제한 비용 이내인 경우 -> pq 추가
-        if (newCost < dist[nxtNode] && newCost <= c && dist[nxtNode] > Math.max(currShy, nxtCost)) {
-          dist[nxtNode] = Math.max(currShy, nxtCost);
-          pq.offer(new long[]{nxtNode, newCost, Math.max(currShy, nxtCost)});
+        if (nxtCost <= limit && newCost < dist[nxtNode]) {
+          dist[nxtNode] = newCost;
+          pq.offer(new long[]{nxtNode, newCost});
         }
       }
     }
 
-    return dist[b] == INF ? -1 : dist[b];
+    return dist[b] != INF;
   }
 }
