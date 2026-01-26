@@ -7,7 +7,7 @@ class Main {
   private static final StringBuilder sb = new StringBuilder();
   private static StringTokenizer st;
 
-  private static final long INF = (long) 1e9;
+  private static final long INF = (long) 1e12;
   private static int n, m, a, b, c; // a <-> b: c 이하
   private static final List<List<long[]>> graph = new ArrayList<>();
 
@@ -49,7 +49,7 @@ class Main {
     while (left <= right) {
       long mid = (left + right) / 2;
       boolean result = dijkstra(mid);
-      
+
       // 해당 금액으로 갈 수 있다면 더 적은 금액으로 검사
       if (result) {
         right = mid - 1;
@@ -85,7 +85,7 @@ class Main {
         long nxtCost = nxt[1];
         long newCost = currCost + nxtCost;
 
-        if (nxtCost <= limit && newCost < dist[nxtNode]) {
+        if (nxtCost <= limit && newCost <= c && newCost < dist[nxtNode]) {
           dist[nxtNode] = newCost;
           pq.offer(new long[]{nxtNode, newCost});
         }
