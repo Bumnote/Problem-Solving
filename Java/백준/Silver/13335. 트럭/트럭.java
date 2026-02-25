@@ -3,6 +3,17 @@ import java.util.*;
 
 class Main {
 
+  static class Truck {
+
+    int weight;
+    int outTime;
+
+    Truck(int weight, int outTime) {
+      this.weight = weight;
+      this.outTime = outTime;
+    }
+  }
+
   private static final BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
   private static final StringBuilder sb = new StringBuilder();
   private static StringTokenizer st;
@@ -30,33 +41,39 @@ class Main {
 
   private static void solve() {
 
-    Deque<Integer> dq = new ArrayDeque<>();
-
-    for (int i = 0; i < w; i++) {
-      dq.offer(0);
-    }
-
-    int idx = 0;
+    Deque<Truck> bridge = new ArrayDeque<>();
     int time = 0;
     int totalWeight = 0;
+    int idx = 0;
 
     while (idx < n) {
-      time++;
+      // 현재 시간에 나갈 트럭 제거
+      if (!bridge.isEmpty() && bridge.peekFirst().outTime == time) {
+        Truck t = bridge.pollFirst();
+        totalWeight -= t.weight;
+      }
 
-      totalWeight -= dq.pollFirst();
-      // 트럭이 다리에 올라갈 수 있다면 -> 다리에 트럭을 올린다.
-      if (totalWeight + a[idx] <= l) {
-        dq.offerLast(a[idx]);
+      // 다음 트럭을 올릴 수 있는 경우
+      if (totalWeight + a[idx] <= l && bridge.size() < w) {
+        bridge.offerLast(new Truck(a[idx], time + w));
         totalWeight += a[idx];
         idx++;
+      } else {
+        // 못 올리면 시간 점프
+        if (!bridge.isEmpty()) {
+          time = bridge.peekFirst().outTime;
+          continue;
+        }
       }
-      // 트럭이 다리에 올라갈 수 없다면 -> 다리에 0을 올린다.
-      else {
-        dq.offerLast(0);
-      }
+
+      time++;
     }
 
-    int answer = time + w;
-    System.out.print(answer);
+    // 마지막 트럭이 빠지는 시간
+    if (!bridge.isEmpty()) {
+      time = bridge.peekLast().outTime;
+    }
+
+    System.out.print(time + 1);
   }
 }
