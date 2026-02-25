@@ -37,6 +37,9 @@ class Main {
     for (int i = 0; i < n; i++) {
       int result = arr[i][0];
       for (int j = 0; j < n; j++) {
+        if (i == j) {
+          continue;
+        }
         result |= arr[i][j];
       }
       answer[i] = result;
