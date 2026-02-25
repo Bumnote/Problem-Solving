@@ -15,7 +15,6 @@ class Main {
   }
 
   private static final BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-  private static final StringBuilder sb = new StringBuilder();
   private static StringTokenizer st;
 
   private static int n, w, l;
@@ -40,40 +39,37 @@ class Main {
   }
 
   private static void solve() {
-
     Deque<Truck> bridge = new ArrayDeque<>();
-    int time = 0;
-    int totalWeight = 0;
-    int idx = 0;
 
-    while (idx < n) {
-      // 현재 시간에 나갈 트럭 제거
-      if (!bridge.isEmpty() && bridge.peekFirst().outTime == time) {
-        Truck t = bridge.pollFirst();
-        totalWeight -= t.weight;
+    int time = 0;         // 현재 시각(초)
+    int totalWeight = 0;  // 다리 위 총 무게
+    int idx = 0;          // 다음에 올릴 트럭 인덱스
+
+    while (idx < n || !bridge.isEmpty()) {
+
+      // 1) 현재 시각에 나갈 트럭들 제거 (점프 때문에 <= 로 안전하게)
+      while (!bridge.isEmpty() && bridge.peekFirst().outTime <= time) {
+        totalWeight -= bridge.pollFirst().weight;
       }
 
-      // 다음 트럭을 올릴 수 있는 경우
-      if (totalWeight + a[idx] <= l && bridge.size() < w) {
+      // 2) 올릴 수 있으면 올리고, "진입은 1초에 1대"이므로 time++ 해야 함
+      if (idx < n && totalWeight + a[idx] <= l && bridge.size() < w) {
         bridge.offerLast(new Truck(a[idx], time + w));
         totalWeight += a[idx];
         idx++;
-      } else {
-        // 못 올리면 시간 점프
-        if (!bridge.isEmpty()) {
-          time = bridge.peekFirst().outTime;
-          continue;
-        }
+        time++;
+        continue;
       }
 
-      time++;
+      // 3) 못 올리면 다음 이벤트(맨 앞 트럭이 나가는 시각)로 점프
+      if (!bridge.isEmpty()) {
+        time = bridge.peekFirst().outTime;
+      } else {
+        // 다리가 비었는데 트럭이 남아있으면 다음 초로
+        time++;
+      }
     }
 
-    // 마지막 트럭이 빠지는 시간
-    if (!bridge.isEmpty()) {
-      time = bridge.peekLast().outTime;
-    }
-
-    System.out.print(time + 1);
+    System.out.print(time);
   }
 }
