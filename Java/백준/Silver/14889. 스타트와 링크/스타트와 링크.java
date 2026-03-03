@@ -10,7 +10,7 @@ class Main {
   private static int n; // even number
   private static int minDiff;
   private static int[][] arr;
-  private static Set<Integer> combination = new HashSet<>();
+  private static boolean[] visited;
 
   public static void main(String[] args) throws Exception {
     init();
@@ -21,6 +21,7 @@ class Main {
     n = Integer.parseInt(br.readLine());
 
     arr = new int[n][n];
+    visited = new boolean[n];
     for (int i = 0; i < n; i++) {
       st = new StringTokenizer(br.readLine());
       for (int j = 0; j < n; j++) {
@@ -43,11 +44,11 @@ class Main {
       int link = 0;
 
       for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-          if (combination.contains(i) && combination.contains(j)) {
-            start += arr[i][j];
-          } else if (!combination.contains(i) && !combination.contains(j)) {
-            link += arr[i][j];
+        for (int j = i + 1; j < n; j++) {
+          if (visited[i] && visited[j]) {
+            start += (arr[i][j] + arr[j][i]);
+          } else if (!visited[i] && !visited[j]) {
+            link += (arr[i][j] + arr[j][i]);
           }
         }
       }
@@ -56,9 +57,9 @@ class Main {
     }
 
     for (int i = idx; i < n; i++) {
-      combination.add(i);
+      visited[i] = true;
       bt(i + 1, cnt + 1);
-      combination.remove(i);
+      visited[i] = false;
     }
   }
 
