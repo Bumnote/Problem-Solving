@@ -37,32 +37,28 @@ class Main {
 
   private static void solve() {
     answer = Integer.MIN_VALUE;
-    bt(0, 0);
-
+    bt(0, 0, 0);
     System.out.print(answer);
   }
 
-  private static void bt(int cnt, int sum) {
+  private static void bt(int start, int cnt, int sum) {
     if (cnt == k) {
       answer = Math.max(answer, sum);
       return;
     }
 
-    for (int i = 0; i < n; i++) {
-      for (int j = 0; j < m; j++) {
-        // 해당 지점을 방문한 경우 -> continue
-        if (visited[i][j]) {
-          continue;
-        }
+    for (int idx = start; idx < n * m; idx++) {
+      int y = idx / m;
+      int x = idx % m;
 
-        boolean isAdjacent = judgeAdjacent(i, j);
-        // 인접한 지점이 없는 경우 -> back tracking 진행
-        if (!isAdjacent) {
-          visited[i][j] = true;
-          bt(cnt + 1, sum + arr[i][j]);
-          visited[i][j] = false;
-        }
+      // 해당 지점이 이미 방문한 곳이거나, 인접한 곳이라면 -> continue
+      if (visited[y][x] || judgeAdjacent(y, x)) {
+        continue;
       }
+
+      visited[y][x] = true;
+      bt(idx + 1, cnt + 1, sum + arr[y][x]);
+      visited[y][x] = false;
     }
   }
 
