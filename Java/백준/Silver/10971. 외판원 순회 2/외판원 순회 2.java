@@ -45,6 +45,10 @@ class Main {
 
   private static void dfs(int curr, int start, int cnt, int sum) {
 
+    if (sum > MIN) {
+      return;
+    }
+
     if (cnt == n) {
       if (map[curr][start] > 0) {
         MIN = Math.min(MIN, sum + map[curr][start]);
