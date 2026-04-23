@@ -1,0 +1,70 @@
+import java.io.*;
+import java.util.*;
+
+public class Main {
+
+  private static final BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+  private static final StringBuilder sb = new StringBuilder();
+  private static StringTokenizer st;
+
+  private static int n, bitmap;
+  private static final int INF = (int) 1e9;
+  private static int[][] map;
+  private static int[][] dp;
+
+  public static void main(String[] args) throws Exception {
+    init();
+    solve();
+  }
+
+  private static void init() throws Exception {
+    n = Integer.parseInt(br.readLine());
+    map = new int[n][n];
+    for (int i = 0; i < n; i++) {
+      st = new StringTokenizer(br.readLine());
+      for (int j = 0; j < n; j++) {
+        map[i][j] = Integer.parseInt(st.nextToken());
+      }
+    }
+
+    bitmap = (1 << n) - 1;
+    dp = new int[n][bitmap];
+    for (int i = 0; i < n; i++) {
+      Arrays.fill(dp[i], -1);
+    }
+    br.close();
+  }
+
+  private static void solve() {
+    System.out.print(tsp(0, 1));
+  }
+
+  private static int tsp(int x, int check) {
+
+    if (check == bitmap) {
+      if (map[x][0] == 0) {
+        return INF;
+      } else {
+        return map[x][0];
+      }
+    }
+
+    if (dp[x][check] != -1) {
+      return dp[x][check];
+    }
+
+    dp[x][check] = INF;
+
+    for (int i = 0; i < n; i++) {
+      int next = check | (1 << i);
+
+      if (map[x][i] == 0 || (check & (1 << i)) != 0) {
+        continue;
+      }
+
+      dp[x][check] = Math.min(dp[x][check], tsp(i, next) + map[x][i]);
+    }
+
+    return dp[x][check];
+  }
+}
